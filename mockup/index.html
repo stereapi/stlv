@@ -1,0 +1,1298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stlv mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* skin = TSR-1 'mono' by default; the others come from the same UI_THEMES table */
+  --bg:#060606; --panel:#0e0e0e; --raised:#202626; --line:#282d2d;
+  --text:#d8e8e8; --dim:#646e6e; --accent:#c8a0b4; --accent2:#6450aa;
+  --panel2:color-mix(in srgb,var(--panel),var(--raised) 55%);
+  --line2:color-mix(in srgb,var(--line),var(--text) 14%);
+  --muted:color-mix(in srgb,var(--dim),var(--text) 38%);
+  --field:var(--bg); --accent-ink:var(--bg);
+  --accent-soft:color-mix(in srgb,var(--accent) 15%,transparent);
+  --accent-edge:color-mix(in srgb,var(--accent) 45%,transparent);
+  --glow:0 0 14px color-mix(in srgb,var(--accent) 40%,transparent);
+  --guide:#5bc8e8; --sel:#ffd84d; --danger:#ff6b6b;
+  --checker: repeating-conic-gradient(color-mix(in srgb,var(--panel),var(--text) 16%) 0 25%, color-mix(in srgb,var(--panel),var(--text) 6%) 0 50%) 0 0/10px 10px;
+}
+:root[data-skin=violet]{--bg:#16141c;--panel:#221e28;--raised:#37283c;--line:#3e3246;--text:#e4dceb;--dim:#75637b;--accent:#a082c8;--accent2:#6a50cd}
+:root[data-skin=paper]{--bg:#e2e8ec;--panel:#d2d8dc;--raised:#bec4c8;--line:#b4bcc0;--text:#1a1818;--dim:#7c868c;--accent:#cc2828;--accent2:#1a1818;--accent-ink:#fff;--guide:#1aa0d0}
+:root[data-skin=terminal]{--bg:#050a05;--panel:#081208;--raised:#0a1e0a;--line:#143614;--text:#22cc44;--dim:#1f721f;--accent:#22cc44;--accent2:#44aa22}
+:root[data-skin=ember]{--bg:#080604;--panel:#120c04;--raised:#1c1208;--line:#41260e;--text:#f0a820;--dim:#855916;--accent:#e09010;--accent2:#c04820}
+:root[data-skin=ice]{--bg:#060810;--panel:#061220;--raised:#08101c;--line:#1e2d4a;--text:#a0c8f0;--dim:#3b6593;--accent:#64b4f0;--accent2:#4060c8}
+:root[data-skin=wyrm]{--bg:#0b0507;--panel:#160b0e;--raised:#281016;--line:#46222b;--text:#e4d4ce;--dim:#786468;--accent:#d6282a;--accent2:#ec601e}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:12px/1.35 Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;overflow:hidden;user-select:none}
+button{font:inherit;color:inherit}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+svg.i.s{width:14px;height:14px}
+
+/* ---------- app frame ---------- */
+#app{display:grid;grid-template-rows:28px 38px 1fr 22px;height:100vh}
+#menubar{display:flex;align-items:center;gap:2px;padding:0 8px;background:var(--bg);border-bottom:1px solid var(--line)}
+.brand{font-weight:700;letter-spacing:.08em;margin-right:14px;display:flex;align-items:center;gap:7px}
+.brand b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);box-shadow:var(--glow);font-size:11px}
+.menu{position:relative}
+.menu>button{background:none;border:0;padding:4px 9px;border-radius:5px;cursor:default}
+.menu.open>button,.menu>button:hover{background:var(--raised)}
+.drop{display:none;position:absolute;top:26px;left:0;min-width:240px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:5px;box-shadow:0 14px 40px rgba(0,0,0,.5);z-index:50}
+.menu.open .drop{display:block}
+.mi{display:flex;justify-content:space-between;gap:20px;padding:5px 10px;border-radius:5px;position:relative;white-space:nowrap}
+.mi:hover{background:var(--accent);color:var(--accent-ink)}
+.mi:hover .k{color:var(--accent-ink)}
+.mi .k{color:var(--muted)}
+.mi.dis{color:var(--dim)} .mi.dis:hover{background:none;color:var(--dim)}
+.sep{height:1px;background:var(--line2);margin:5px 4px}
+.mi .sub{display:none;position:absolute;left:100%;top:-6px;min-width:200px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:5px;color:var(--text);box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.mi:hover .sub{display:block}
+.mi .sub .mi:hover{background:var(--accent);color:var(--accent-ink)}
+.menubar-right{margin-left:auto;color:var(--muted);display:flex;gap:12px;align-items:center}
+
+#options{display:flex;align-items:center;gap:6px;padding:0 10px;background:var(--panel);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap}
+.ob-tool{display:flex;align-items:center;gap:6px;padding-right:10px;margin-right:4px;border-right:1px solid var(--line);color:var(--muted)}
+.ob-tool svg{color:var(--text)}
+.og{display:flex;align-items:center;gap:6px;padding:0 8px;border-right:1px solid var(--line);height:22px}
+.og:last-child{border-right:0}
+.lbl{color:var(--muted)}
+.fld{background:var(--field);border:1px solid var(--line2);border-radius:5px;padding:2px 6px;min-width:44px;height:22px;display:inline-flex;align-items:center;justify-content:flex-end;color:var(--text)}
+.fld.w{min-width:64px}.fld.l{justify-content:flex-start}
+.sel{background:var(--field);border:1px solid var(--line2);border-radius:5px;padding:2px 22px 2px 7px;height:22px;display:inline-flex;align-items:center;position:relative;color:var(--text)}
+.sel:after{content:"";position:absolute;right:8px;top:8px;border:4px solid transparent;border-top-color:var(--muted)}
+.seg{display:inline-flex;background:var(--field);border:1px solid var(--line2);border-radius:6px;padding:1px;gap:1px}
+.seg>span{padding:2px 7px;border-radius:4px;color:var(--muted);display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.seg>span.on{background:var(--raised);color:var(--text);box-shadow:inset 0 0 0 1px var(--line2)}
+.chk{display:inline-flex;align-items:center;gap:5px;color:var(--text)}
+.chk i{width:13px;height:13px;border-radius:3px;border:1px solid var(--line2);background:var(--field);display:inline-grid;place-items:center}
+.chk.on i{background:var(--accent);border-color:var(--accent)}
+.chk.on i:after{content:"";width:6px;height:3px;border:2px solid var(--accent-ink);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.gchip{width:90px;height:18px;border-radius:4px;border:1px solid var(--line2);background:linear-gradient(90deg,rgba(255,179,71,0),#ff3d8b),var(--checker);background-size:auto,8px 8px}
+.btn{background:var(--raised);border:1px solid var(--line2);border-radius:6px;padding:3px 10px;height:24px;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;box-shadow:var(--glow)}
+.btn.ghost{background:none}
+.dot{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,rgba(255,255,255,.35) 60%,transparent 70%);border:1px solid var(--line2)}
+
+#main{display:grid;grid-template-columns:46px 1fr 304px;min-height:0}
+
+/* toolbar */
+#tools{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:6px 0;gap:2px}
+.tool{width:34px;height:32px;border:0;background:none;border-radius:6px;display:grid;place-items:center;color:var(--muted);cursor:pointer;position:relative}
+.tool:hover{background:var(--raised);color:var(--text)}
+.tool.on{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent-edge),var(--glow)}
+.tool .tip{display:none;position:absolute;left:40px;top:5px;background:#000;color:#fff;padding:3px 8px;border-radius:5px;white-space:nowrap;z-index:30;pointer-events:none}
+.tool:hover .tip{display:block}
+.tool .tip em{color:var(--muted);font-style:normal;margin-left:6px}
+.tsep{width:24px;height:1px;background:var(--line);margin:4px 0}
+.fgbg{position:relative;width:34px;height:34px;margin-top:8px}
+.fgbg .bg,.fgbg .fg{position:absolute;width:20px;height:20px;border-radius:4px;border:1.5px solid #000;box-shadow:0 0 0 1px var(--line2)}
+.fgbg .fg{left:2px;top:2px;background:#ff3d8b;z-index:2}
+.fgbg .bg{right:2px;bottom:2px;background:#f3efe6}
+
+/* canvas area */
+#center{display:grid;grid-template-rows:30px 1fr;min-width:0;min-height:0}
+#tabs{display:flex;align-items:flex-end;background:var(--bg);border-bottom:1px solid var(--line);padding-left:6px;gap:2px}
+.dtab{background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:7px 7px 0 0;padding:6px 12px;display:flex;gap:10px;align-items:center}
+.dtab.off{background:none;color:var(--muted);border-color:transparent}
+.dtab .x{color:var(--muted)}
+#stage{display:grid;grid-template:20px 1fr / 20px 1fr;min-height:0;min-width:0}
+#corner{background:var(--panel);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+canvas.ruler{display:block;background:var(--panel);width:100%;height:100%;cursor:default}
+#rulerT{border-bottom:1px solid var(--line);cursor:ns-resize}
+#rulerL{border-right:1px solid var(--line);cursor:ew-resize}
+#viewport{position:relative;overflow:hidden;background:var(--bg) linear-gradient(var(--grid) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/28px 28px;--grid:color-mix(in srgb,var(--line) 45%,transparent);display:grid;place-items:center;cursor:crosshair}
+#doc{position:relative;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 20px 60px rgba(0,0,0,.55)}
+#doc svg{display:block;width:100%;height:100%;isolation:isolate;overflow:visible}
+#guides{position:absolute;inset:0;pointer-events:none}
+.guide{position:absolute;background:var(--guide);pointer-events:auto;opacity:.9;box-shadow:0 0 6px var(--guide)}
+.guide.h{left:0;right:0;height:1px;cursor:ns-resize}
+.guide.v{top:0;bottom:0;width:1px;cursor:ew-resize}
+.guide.h:before{content:"";position:absolute;left:0;right:0;top:-3px;height:7px}
+.guide.v:before{content:"";position:absolute;top:0;bottom:0;left:-3px;width:7px}
+#gtip{position:absolute;background:#000;color:#fff;padding:2px 6px;border-radius:4px;display:none;pointer-events:none;font-size:11px;z-index:5}
+.ants{fill:none;stroke-width:5;stroke-dasharray:28 28;animation:ants 1s linear infinite}
+@keyframes ants{to{stroke-dashoffset:-56}}
+
+/* right panels */
+#panels{background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.pnl{border-bottom:1px solid var(--line)}
+.ph{display:flex;align-items:center;gap:14px;padding:7px 10px 0;border-bottom:1px solid var(--line)}
+.ph span{padding-bottom:6px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.ph span.on{color:var(--text);border-bottom-color:var(--accent)}
+.ph .more{margin-left:auto;color:var(--dim);padding-bottom:6px}
+.pb{padding:10px}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.row:last-child{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.kv{display:flex;align-items:center;gap:6px}
+.kv .lbl{min-width:14px}
+.kv .fld{flex:1}
+
+/* color */
+.picker{display:grid;grid-template-columns:1fr 14px;gap:8px;height:96px}
+.sv{border-radius:6px;position:relative;background:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,hsl(332,100%,50%))}
+.sv i{position:absolute;left:76%;top:12%;width:11px;height:11px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #000;transform:translate(-50%,-50%)}
+.hue{border-radius:4px;position:relative;background:linear-gradient(to bottom,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+.hue i{position:absolute;left:-2px;right:-2px;top:92%;height:4px;border:1.5px solid #fff;border-radius:2px;box-shadow:0 0 0 1px #000}
+.sw{display:flex;gap:4px;flex-wrap:wrap}
+.sw i{width:17px;height:17px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+
+/* layers */
+#layersWrap{flex:1;display:flex;flex-direction:column;min-height:0}
+.lhead{padding:8px 10px;display:grid;grid-template-columns:1fr auto;gap:6px 8px;border-bottom:1px solid var(--line)}
+.lhead .sel{width:100%}
+.locks{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.locks svg{width:15px;height:15px}
+#layers{flex:1;overflow:auto;padding:4px 0}
+.layer{display:grid;grid-template-columns:24px auto 1fr auto;align-items:center;gap:8px;padding:4px 8px 4px 4px;margin:0 4px;border-radius:6px;cursor:pointer}
+.layer:hover{background:var(--panel2)}
+.layer.on{background:var(--accent-soft);box-shadow:inset 2px 0 0 var(--accent),inset 0 0 0 1px var(--accent-edge)}
+.layer .eye{color:var(--muted);display:grid;place-items:center}
+.layer .eye.off{opacity:.25}
+.thumb{width:34px;height:42px;border-radius:3px;overflow:hidden;background:var(--checker);background-size:6px 6px;box-shadow:0 0 0 1px var(--line2)}
+.thumb svg{width:100%;height:100%;display:block}
+.lname{display:flex;flex-direction:column;min-width:0}
+.lname b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lname small{color:var(--muted);font-size:10.5px}
+.badges{display:flex;gap:4px;color:var(--muted);align-items:center}
+.badge{font-size:10px;border:1px solid var(--line2);border-radius:4px;padding:0 4px;color:var(--muted)}
+.badge.fx{color:var(--accent);border-color:var(--accent-edge)}
+.fxrow{display:flex;align-items:center;gap:6px;padding:2px 8px 4px 70px;color:var(--muted);font-size:11px}
+.fxrow .gdot{width:22px;height:9px;border-radius:2px;background:linear-gradient(90deg,#ffb347,#ff3d8b)}
+.lfoot{display:flex;justify-content:flex-end;gap:4px;padding:6px 8px;border-top:1px solid var(--line);color:var(--muted)}
+.lfoot button{background:none;border:0;width:28px;height:24px;border-radius:5px;display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+.lfoot button:hover{background:var(--raised);color:var(--text)}
+.hist{padding:4px}
+.hist div{padding:5px 10px;border-radius:5px;display:flex;gap:8px;align-items:center}
+.hist div.on{background:var(--accent-soft)}
+.hist div.fut{color:var(--dim)}
+
+/* status */
+#status{display:flex;align-items:center;gap:16px;padding:0 10px;background:var(--bg);border-top:1px solid var(--line);color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden}
+#status b{color:var(--text);font-weight:500}
+#status .r{margin-left:auto;display:flex;gap:14px}
+.ok{color:#7ee2a8}
+
+/* modals */
+.scrim{position:fixed;inset:0;background:rgba(5,6,8,.62);backdrop-filter:blur(2px);display:none;place-items:center;z-index:80}
+.scrim.on{display:grid}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:12px;box-shadow:0 30px 90px rgba(0,0,0,.6);overflow:hidden;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px)}
+.mh{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.mh h2{margin:0;font-size:14px;font-weight:600}
+.mh .x{margin-left:auto;color:var(--muted);cursor:pointer}
+.mf{padding:12px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;align-items:center}
+.mf .note{margin-right:auto;color:var(--muted)}
+.fl{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fl>label{color:var(--muted);font-size:11px;letter-spacing:.02em}
+.in{background:var(--field);border:1px solid var(--line2);border-radius:6px;height:28px;padding:0 9px;color:var(--text);font:inherit;width:100%;outline:none}
+.in:focus{border-color:var(--accent)}
+select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 13px) 12px,calc(100% - 9px) 12px;background-size:4px 4px;background-repeat:no-repeat;padding-right:24px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* new doc */
+#newdoc .modal{width:900px;display:grid;grid-template-rows:auto 1fr auto}
+.nd{display:grid;grid-template-columns:1fr 300px;min-height:440px}
+.nd-left{padding:14px 18px;border-right:1px solid var(--line)}
+.cats{display:flex;gap:16px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.cats span{padding-bottom:8px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.cats span.on{color:var(--text);border-color:var(--accent)}
+.presets{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pc{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;text-align:center}
+.pc:hover{border-color:var(--line2)}
+.pc.on{border-color:var(--accent);background:var(--accent-soft)}
+.pc .shape{height:58px;display:grid;place-items:center}
+.pc .shape i{display:block;border:1.5px solid var(--muted);border-radius:2px;background:rgba(255,255,255,.03)}
+.pc.on .shape i{border-color:var(--accent)}
+.pc b{font-weight:500}
+.pc small{color:var(--muted)}
+.nd-right{padding:14px 18px;background:var(--panel2)}
+.readout{background:var(--field);border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:4px;color:var(--muted);line-height:1.6}
+.readout b{color:var(--text)}
+.orient{display:flex;gap:6px}
+.orient span{width:30px;height:28px;border-radius:6px;border:1px solid var(--line2);display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+.orient span.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.orient i{display:block;border:1.5px solid currentColor;border-radius:1px}
+
+/* gradient editor */
+#grad .modal{width:620px}
+.gpre{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:16px}
+.gpre i{height:34px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);cursor:pointer;background-size:auto,10px 10px}
+.gpre i.on{box-shadow:0 0 0 2px var(--accent)}
+.gbarwrap{position:relative;padding:18px 8px 22px;margin-bottom:10px}
+.gbar{height:34px;border-radius:5px;background:linear-gradient(90deg,rgba(255,179,71,0) 0%,rgba(255,140,80,.5) 45%,#ff3d8b 100%),var(--checker);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.stop{position:absolute;width:14px;height:14px;transform:translateX(-50%);cursor:pointer}
+.stop.top{top:2px}.stop.bot{bottom:4px}
+.stop:before{content:"";position:absolute;left:3px;width:0;height:0;border:4px solid transparent}
+.stop.top:before{bottom:-7px;border-top-color:#ccc}
+.stop.bot:before{top:-7px;border-bottom-color:#ccc}
+.stop i{display:block;width:14px;height:14px;border-radius:3px;border:1.5px solid #ccc}
+.stop.on i{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-edge)}
+.gfields{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px}
+.gfields h4{margin:0 0 8px;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+
+/* export */
+#export .modal{width:940px;display:grid;grid-template-rows:auto 1fr auto}
+.ex{display:grid;grid-template-columns:1fr 320px;min-height:480px}
+.ex-prev{background:#0c0d0f;position:relative;display:grid;place-items:center;border-right:1px solid var(--line)}
+.ex-prev .frame{width:300px;height:375px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.ex-prev .frame svg{width:100%;height:100%;display:block}
+.ex-prev .meta{position:absolute;left:12px;bottom:10px;color:var(--muted)}
+.ex-prev .meta b{color:var(--text)}
+.ex-prev .zoombox{position:absolute;right:12px;bottom:10px}
+.ex-side{padding:14px 18px;overflow:auto}
+.ex-side h4{margin:4px 0 10px;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.ex-side section{padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.ex-side section:last-child{border-bottom:0}
+.slider{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--accent) 0 82%,var(--line2) 82%);position:relative;flex:1}
+.slider:after{content:"";position:absolute;left:82%;top:-5px;width:14px;height:14px;border-radius:50%;background:#fff;transform:translateX(-50%)}
+.ex-side .seg{width:100%}
+.ex-side .seg>span{flex:1;justify-content:center;padding:4px 0}
+.hide{display:none!important}
+
+/* image size */
+#imgsize .modal{width:520px}
+.linkcol{display:grid;grid-template-columns:1fr 26px;gap:8px;align-items:center}
+.chain{height:62px;border:1.5px solid var(--line2);border-left:0;border-radius:0 6px 6px 0;width:12px;position:relative;cursor:pointer}
+.chain svg{position:absolute;left:4px;top:22px;background:var(--panel);color:var(--accent)}
+.chain.off svg{color:var(--dim)}
+.rs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.rsc{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--panel2);cursor:pointer}
+.rsc.on{border-color:var(--accent);background:var(--accent-soft)}
+.rsc b{font-weight:500;display:block;margin-bottom:2px}
+.rsc small{color:var(--muted)}
+
+/* mockup nav */
+#mnav{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);z-index:100;display:flex;gap:2px;background:rgba(10,11,13,.92);border:1px solid var(--line2);border-radius:999px;padding:4px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#mnav span{padding:5px 12px;border-radius:999px;color:var(--muted);cursor:pointer;white-space:nowrap}
+#mnav span.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
+#mnav em{font-style:normal;color:var(--dim);padding:5px 8px 5px 10px;font-weight:600;letter-spacing:.08em}
+/* TSR-1 voice: condensed caps for headers and section labels */
+.brand,.ph span,.mh h2,.ex-side h4,.gfields h4,.cats span,#mnav span,#mnav em,.ob-tool>span{font-family:'Barlow Condensed',Inter,sans-serif;text-transform:uppercase;letter-spacing:.09em;font-weight:600}
+.ph span,.cats span{font-size:13px}.mh h2{font-size:17px}.brand{font-size:15px}
+.ex-side h4,.gfields h4{font-size:13px}
+#doc{color:var(--accent)}
+.skins{display:flex;gap:5px;align-items:center}
+.skins i{width:11px;height:11px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 1px var(--line2)}
+.skins i.on{box-shadow:0 0 0 2px var(--text)}
+.layer.child{margin-left:22px;position:relative}
+.layer.child:before{content:"";position:absolute;left:-10px;top:0;bottom:0;width:1px;background:var(--line2)}
+.thumb.mask{background:#fff}
+.mlink{color:var(--dim);margin:0 -5px}
+.thumbs{display:flex;align-items:center;gap:6px}
+.layer.grp .thumb{background:none;box-shadow:none;display:grid;place-items:center;color:var(--accent)}
+/* filters + adjustments */
+#fxview{position:absolute;inset:0;width:100%;height:100%;display:none;z-index:1}
+body.fxmode #fxview{display:block}
+#fxc{position:absolute;z-index:2;width:22px;height:22px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #000,var(--glow);transform:translate(-50%,-50%);pointer-events:none;display:none}
+#fxc:after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;background:#fff;border-radius:50%;transform:translate(-50%,-50%)}
+body.fxmode .colorpnl{display:none}
+body.fxmode .propspnl{overflow:auto;flex:0 1 auto;max-height:64vh}
+.fxg{margin-bottom:8px}
+.fxg>.lbl{display:block;font-family:'Barlow Condensed',Inter,sans-serif;text-transform:uppercase;letter-spacing:.09em;font-size:11px;margin-bottom:4px}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{padding:3px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);cursor:pointer;font-size:11px}
+.chip:hover{color:var(--text)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:var(--glow)}
+.sl{display:grid;grid-template-columns:84px 1fr 56px;gap:8px;align-items:center;margin-bottom:6px}
+.sl input{width:100%;accent-color:var(--accent)}
+#curve{width:100%;aspect-ratio:1;display:block;margin:2px 0 6px;background:var(--field);border:1px solid var(--line);border-radius:6px;cursor:crosshair}
+#hist{width:100%;height:56px;display:block;margin:2px 0 8px;background:var(--field);border:1px solid var(--line);border-radius:6px}
+</style>
+</head>
+<body>
+
+<!-- ======= shared layer artwork (doc space 2400 x 3000) ======= -->
+<svg id="lib" width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="g-sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb347"/><stop offset="1" stop-color="#ff3d8b"/></linearGradient>
+    <linearGradient id="g-haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4fd8" stop-opacity="0"/><stop offset=".5" stop-color="#ff4fd8" stop-opacity=".55"/><stop offset="1" stop-color="#5a3cff" stop-opacity=".75"/></linearGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="5"/></filter>
+    <g id="L-bg"><rect width="2400" height="3000" fill="#0b0d1f"/>
+      <g fill="#fff" opacity=".55"><circle cx="220" cy="300" r="6"/><circle cx="640" cy="180" r="4"/><circle cx="980" cy="420" r="5"/><circle cx="420" cy="760" r="4"/><circle cx="1380" cy="240" r="6"/><circle cx="2100" cy="360" r="4"/><circle cx="1860" cy="140" r="5"/><circle cx="760" cy="1040" r="3"/><circle cx="2240" cy="720" r="4"/><circle cx="160" cy="1120" r="5"/></g></g>
+    <g id="L-sun"><circle cx="1650" cy="1330" r="440" fill="url(#g-sun)"/></g>
+    <g id="L-mtn">
+      <polygon fill="#1d2356" points="0,1700 300,1450 620,1600 950,1250 1300,1550 1600,1380 1900,1600 2200,1400 2400,1520 2400,3000 0,3000"/>
+      <polygon fill="#11143a" points="0,2000 400,1800 800,1950 1150,1720 1500,1900 1900,1780 2400,2050 2400,3000 0,3000"/></g>
+    <g id="L-haze"><rect width="2400" height="3000" fill="url(#g-haze)"/></g>
+    <linearGradient id="g-mask" x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
+    <g id="M-mtn"><rect width="2400" height="3000" fill="url(#g-mask)"/></g>
+    <g id="L-stroke"><path d="M1130 1240 C1180 760 2080 700 2170 1130 S1900 1700 1460 1610" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" filter="url(#soft)"/></g>
+    <path id="arcPath" d="M 260 2640 Q 1200 2180 2140 2640"/>
+    <g id="L-text"><text font-family="Archivo Black" font-size="600" fill="#f3efe6" letter-spacing="20"><textPath href="#arcPath" startOffset="50%" text-anchor="middle">STLV</textPath></text></g>
+  </defs>
+</svg>
+
+<div id="app">
+  <!-- menubar -->
+  <div id="menubar">
+    <div class="brand"><b>s</b>stlv</div>
+    <div id="menus" style="display:flex;gap:2px"></div>
+    <div class="menubar-right"><span class="lbl">Skin</span><span class="skins" id="skins"></span><span>Workspace: Essentials</span></div>
+  </div>
+
+  <!-- options bar -->
+  <div id="options"></div>
+
+  <div id="main">
+    <div id="tools"></div>
+
+    <div id="center">
+      <div id="tabs">
+        <div class="dtab"><span>poster.stlv @ <span class="zv">20</span>% (<span id="tabLayer">sun</span>, RGB/8)</span><span class="x">×</span></div>
+        <div class="dtab off"><span>untitled-1 @ 50%</span><span class="x">×</span></div>
+      </div>
+      <div id="stage">
+        <div id="corner"></div>
+        <canvas class="ruler" id="rulerT"></canvas>
+        <canvas class="ruler" id="rulerL"></canvas>
+        <div id="viewport">
+          <div id="doc">
+            <canvas id="fxview"></canvas><div id="fxc"></div>
+            <svg viewBox="0 0 2400 3000" id="art" preserveAspectRatio="none">
+              <use href="#L-bg" data-cas="stretch"/>
+              <use href="#L-sun" data-cas="sun"/>
+              <use href="#L-mtn" data-cas="stretch"/>
+              <use href="#L-haze" data-cas="stretch" style="mix-blend-mode:screen"/>
+              <use href="#L-stroke" data-cas="sun" opacity=".8"/>
+              <use href="#L-text" data-cas="text"/>
+              <!-- content-aware: protected areas + transform box -->
+              <g id="cas" style="display:none">
+                <g fill="#ff2a4d" fill-opacity=".28" stroke="#ff2a4d" stroke-opacity=".7" stroke-width="5" stroke-dasharray="24 16">
+                  <ellipse cx="2475" cy="1330" rx="500" ry="500"/>
+                  <path d="M810 2100 Q1800 1600 2790 2100 L2790 2720 Q1800 2220 810 2720 Z"/>
+                </g>
+                <rect x="0" y="0" width="3600" height="3000" fill="none" stroke="currentColor" stroke-width="6"/>
+                <rect x="600" y="0" width="2400" height="3000" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="5" stroke-dasharray="30 24"/>
+                <g fill="#000" stroke="currentColor" stroke-width="8">
+                  <rect x="-25" y="-25" width="50" height="50"/><rect x="1775" y="-25" width="50" height="50"/><rect x="3575" y="-25" width="50" height="50"/>
+                  <rect x="-25" y="1475" width="50" height="50"/><rect x="3575" y="1475" width="50" height="50"/>
+                  <rect x="-25" y="2975" width="50" height="50"/><rect x="1775" y="2975" width="50" height="50"/><rect x="3575" y="2975" width="50" height="50"/>
+                </g>
+                <g font-family="Inter" font-size="64" font-weight="600">
+                  <rect x="3150" y="1440" width="390" height="120" rx="20" fill="#000" fill-opacity=".8"/>
+                  <text x="3345" y="1520" fill="#fff" text-anchor="middle">W 150%</text>
+                  <text x="1800" y="-60" fill="#fff" fill-opacity=".6" text-anchor="middle" font-size="56">original width</text>
+                </g>
+              </g>
+              <!-- selection (workspace) -->
+              <g id="selection">
+                <ellipse cx="1650" cy="1330" rx="500" ry="500" fill="none" stroke="#fff" stroke-width="5"/>
+                <ellipse class="ants" cx="1650" cy="1330" rx="500" ry="500" stroke="#000"/>
+              </g>
+              <!-- warp overlay -->
+              <g id="warp" style="display:none" fill="none" stroke="currentColor" vector-effect="non-scaling-stroke">
+                <g stroke-width="1.2" vector-effect="non-scaling-stroke">
+                  <path vector-effect="non-scaling-stroke" d="M260 2120 Q1200 1660 2140 2120"/>
+                  <path vector-effect="non-scaling-stroke" d="M260 2313 Q1200 1853 2140 2313" stroke-opacity=".55"/>
+                  <path vector-effect="non-scaling-stroke" d="M260 2507 Q1200 2047 2140 2507" stroke-opacity=".55"/>
+                  <path vector-effect="non-scaling-stroke" d="M260 2700 Q1200 2240 2140 2700"/>
+                  <path vector-effect="non-scaling-stroke" d="M260 2120 L260 2700"/>
+                  <path vector-effect="non-scaling-stroke" d="M887 1916 L887 2496" stroke-opacity=".55"/>
+                  <path vector-effect="non-scaling-stroke" d="M1513 1916 L1513 2496" stroke-opacity=".55"/>
+                  <path vector-effect="non-scaling-stroke" d="M2140 2120 L2140 2700"/>
+                  <path vector-effect="non-scaling-stroke" d="M260 2120 L887 1813 M2140 2120 L1513 1813 M260 2700 L887 2393 M2140 2700 L1513 2393" stroke="#fff" stroke-opacity=".7"/>
+                </g>
+                <g fill="#000" stroke="currentColor" stroke-width="8">
+                  <rect x="235" y="2095" width="50" height="50"/><rect x="2115" y="2095" width="50" height="50"/>
+                  <rect x="235" y="2675" width="50" height="50"/><rect x="2115" y="2675" width="50" height="50"/>
+                </g>
+                <g fill="#fff" stroke="none">
+                  <circle cx="887" cy="1813" r="22"/><circle cx="1513" cy="1813" r="22"/><circle cx="887" cy="2393" r="22"/><circle cx="1513" cy="2393" r="22"/>
+                  <circle cx="887" cy="1916" r="13" fill="currentColor"/><circle cx="1513" cy="1916" r="13" fill="currentColor"/><circle cx="887" cy="2496" r="13" fill="currentColor"/><circle cx="1513" cy="2496" r="13" fill="currentColor"/>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <div id="guides"></div>
+          <div id="gtip"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- right panels -->
+    <div id="panels">
+      <div class="pnl colorpnl">
+        <div class="ph"><span class="on">Color</span><span>Swatches</span><span class="more">···</span></div>
+        <div class="pb">
+          <div class="picker"><div class="sv"><i></i></div><div class="hue"><i></i></div></div>
+          <div class="row" style="margin-top:9px">
+            <span class="lbl">#</span><span class="fld l" style="flex:1">FF3D8B</span>
+            <span class="lbl">R</span><span class="fld">255</span><span class="lbl">G</span><span class="fld">61</span><span class="lbl">B</span><span class="fld">139</span>
+          </div>
+          <div class="sw"><i style="background:#000"></i><i style="background:#fff"></i><i style="background:#f3efe6"></i><i style="background:#0b0d1f"></i><i style="background:#1d2356"></i><i style="background:#5a3cff"></i><i style="background:#8fd3ff"></i><i style="background:#ff4fd8"></i><i style="background:#ff3d8b"></i><i style="background:#ffb347"></i><i style="background:#ffe066"></i><i style="background:#7ee2a8"></i></div>
+        </div>
+      </div>
+      <div class="pnl propspnl">
+        <div class="ph"><span class="on">Properties</span><span class="more">···</span></div>
+        <div class="pb" id="props"></div>
+      </div>
+      <div id="layersWrap">
+        <div class="ph"><span class="on" data-ptab="layers">Layers</span><span data-ptab="history">History</span><span class="more">···</span></div>
+        <div id="layersPane" style="display:flex;flex-direction:column;flex:1;min-height:0">
+          <div class="lhead">
+            <span class="sel" id="blendSel">Normal</span>
+            <span class="kv"><span class="lbl" style="width:auto">Opacity</span><span class="fld">100%</span></span>
+            <span class="locks"><span class="lbl">Lock</span>
+              <svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="2 2"/></svg>
+              <svg class="i" viewBox="0 0 24 24"><path d="M5 19l9-9 3 3-9 9H5zM14 10l3-3 3 3-3 3"/></svg>
+              <svg class="i" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg>
+              <svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+            </span>
+            <span class="kv"><span class="lbl" style="width:auto">Fill</span><span class="fld">100%</span></span>
+          </div>
+          <div id="layers"></div>
+          <div class="lfoot">
+            <button title="Layer style"><b style="font-style:italic;font-size:12px">fx</b></button>
+            <button title="New fill or adjustment layer" data-goto="fx" data-fx="levels"><svg class="i s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 010 16z" fill="currentColor"/></svg></button>
+            <button title="Layer mask"><svg class="i s" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/></svg></button>
+            <button title="New group"><svg class="i s" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></button>
+            <button title="New layer"><svg class="i s" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 8v8M8 12h8"/></svg></button>
+            <button title="Delete layer"><svg class="i s" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>
+          </div>
+        </div>
+        <div id="historyPane" class="hist hide"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="status">
+    <span><b class="zv">20</b>%</span>
+    <span>poster.stlv · <b>2400 × 3000 px</b> · 8 × 10 in @ <b>300 ppi</b> · RGB/8 · sRGB</span>
+    <span>6 layers · 166 MB</span>
+    <span id="cursor">X — Y —</span>
+    <span class="r"><span>Snap: guides, edges</span><span><span class="ok">●</span> WebGL2 · idle 0% CPU</span></span>
+  </div>
+</div>
+
+<!-- ======= New document ======= -->
+<div class="scrim" id="newdoc"><div class="modal">
+  <div class="mh"><h2>New document</h2><span class="x" data-close>✕</span></div>
+  <div class="nd">
+    <div class="nd-left">
+      <div class="cats" id="cats"></div>
+      <div class="presets" id="presets"></div>
+    </div>
+    <div class="nd-right">
+      <div class="fl"><label>Name</label><input class="in" id="ndName" value="poster"></div>
+      <div class="two">
+        <div class="fl"><label>Width</label><input class="in" id="ndW" value="8"></div>
+        <div class="fl"><label>Height</label><input class="in" id="ndH" value="10"></div>
+      </div>
+      <div class="two">
+        <div class="fl"><label>Units</label><select class="in" id="ndU"><option>Pixels</option><option selected>Inches</option><option>Centimeters</option><option>Millimeters</option></select></div>
+        <div class="fl"><label>Orientation</label><div class="orient"><span class="on" id="oP"><i style="width:10px;height:14px"></i></span><span id="oL"><i style="width:14px;height:10px"></i></span></div></div>
+      </div>
+      <div class="two">
+        <div class="fl"><label>Resolution</label><input class="in" id="ndR" value="300"></div>
+        <div class="fl"><label>&nbsp;</label><select class="in"><option>Pixels/Inch</option><option>Pixels/Centimeter</option></select></div>
+      </div>
+      <div class="two">
+        <div class="fl"><label>Color mode</label><select class="in"><option>RGB Color</option><option>Grayscale</option></select></div>
+        <div class="fl"><label>Bit depth</label><select class="in"><option>8 bit</option></select></div>
+      </div>
+      <div class="fl"><label>Background contents</label><select class="in" id="ndBg"><option>White</option><option>Black</option><option>Transparent</option><option>Foreground color</option><option>Custom…</option></select></div>
+      <div class="readout" id="ndOut"></div>
+    </div>
+  </div>
+  <div class="mf"><span class="note">Color profile: sRGB IEC61966-2.1</span><span class="btn ghost" data-close>Close</span><span class="btn pri" data-goto="workspace">Create</span></div>
+</div></div>
+
+<!-- ======= Gradient editor ======= -->
+<div class="scrim" id="grad"><div class="modal">
+  <div class="mh"><h2>Gradient editor</h2><span class="lbl">used by Gradient tool · Gradient fill layer · Gradient Overlay</span><span class="x" data-close>✕</span></div>
+  <div class="pb" style="padding:16px 18px">
+    <div class="fl"><label>Presets</label></div>
+    <div class="gpre" id="gpre"></div>
+    <div class="two" style="grid-template-columns:1fr 160px">
+      <div class="fl"><label>Name</label><input class="in" value="Sunset → transparent"></div>
+      <div class="fl"><label>Interpolation</label><select class="in"><option>Perceptual</option><option>Linear</option></select></div>
+    </div>
+    <div class="gbarwrap">
+      <div class="gbar"></div>
+      <div class="stop top on" style="left:calc(8px + 0%)"><i style="background:var(--checker);background-size:6px 6px"></i></div>
+      <div class="stop top" style="left:calc(8px + 45% - 7px)"><i style="background:rgba(255,255,255,.5)"></i></div>
+      <div class="stop top" style="left:calc(100% - 8px)"><i style="background:#fff"></i></div>
+      <div class="stop bot" style="left:calc(8px + 0%)"><i style="background:#ffb347"></i></div>
+      <div class="stop bot" style="left:calc(100% - 8px)"><i style="background:#ff3d8b"></i></div>
+    </div>
+    <div class="gfields">
+      <div><h4>Opacity stop</h4>
+        <div class="two"><div class="fl"><label>Opacity</label><input class="in" value="0 %"></div><div class="fl"><label>Location</label><input class="in" value="0 %"></div></div>
+      </div>
+      <div><h4>Color stop</h4>
+        <div class="two"><div class="fl"><label>Color</label><div class="in" style="display:flex;align-items:center;gap:8px"><i style="width:14px;height:14px;border-radius:3px;background:#ffb347;display:block"></i>FFB347</div></div><div class="fl"><label>Location</label><input class="in" value="0 %"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="mf"><span class="note">Stops blend in premultiplied alpha, so a fade to transparent never picks up a grey fringe.</span><span class="btn ghost" data-close>Cancel</span><span class="btn pri" data-close>OK</span></div>
+</div></div>
+
+<!-- ======= Image size ======= -->
+<div class="scrim" id="imgsize"><div class="modal">
+  <div class="mh"><h2>Image size</h2><span class="x" data-close>✕</span></div>
+  <div class="pb" style="padding:16px 18px">
+    <div class="readout" style="margin:0 0 14px">Image size: <b>27.5 MB</b> (was 27.5 MB) · Dimensions: <b>2400 × 3000 px</b></div>
+    <div class="linkcol">
+      <div>
+        <div class="two"><div class="fl"><label>Width</label><input class="in" value="2400"></div><div class="fl"><label>&nbsp;</label><select class="in"><option>Pixels</option><option>Percent</option><option>Inches</option><option>Centimeters</option></select></div></div>
+        <div class="two"><div class="fl"><label>Height</label><input class="in" value="3000"></div><div class="fl"><label>&nbsp;</label><select class="in"><option>Pixels</option></select></div></div>
+      </div>
+      <div class="chain" id="chain" title="Constrain proportions (off = stretch)"><svg class="i s" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.66 0l3-3a4 4 0 00-5.66-5.66l-1 1M14 10a4 4 0 00-5.66 0l-3 3a4 4 0 005.66 5.66l1-1"/></svg></div>
+    </div>
+    <div class="two"><div class="fl"><label>Resolution</label><input class="in" value="300"></div><div class="fl"><label>&nbsp;</label><select class="in"><option>Pixels/Inch</option></select></div></div>
+    <div class="fl"><label><span class="chk on"><i></i></span> Resample: how pixels are rebuilt when the size changes</label></div>
+    <div class="rs" id="rs"></div>
+  </div>
+  <div class="mf"><span class="note" id="chainNote">Proportions linked. Unlink the chain to stretch.</span><span class="btn ghost" data-close>Cancel</span><span class="btn pri" data-close>OK</span></div>
+</div></div>
+
+<!-- ======= Export ======= -->
+<div class="scrim" id="export"><div class="modal">
+  <div class="mh"><h2>Export as</h2><span class="x" data-close>✕</span></div>
+  <div class="ex">
+    <div class="ex-prev" id="exPrev">
+      <div class="frame"><svg viewBox="0 0 2400 3000"><use href="#L-bg"/><use href="#L-sun"/><use href="#L-mtn"/><use href="#L-haze" style="mix-blend-mode:screen"/><use href="#L-stroke" opacity=".8"/><use href="#L-text"/></svg></div>
+      <div class="meta">poster.png · <b id="exSize">≈ 6.4 MB</b> · 2400 × 3000 px</div>
+      <div class="zoombox"><span class="sel">Fit</span></div>
+    </div>
+    <div class="ex-side">
+      <section>
+        <h4>Format</h4>
+        <div class="seg" id="fmt"><span class="on">PNG</span><span>JPG</span><span>WebP</span><span>PSD</span><span>PDF</span></div>
+        <div style="margin-top:12px" id="fmtOpts"></div>
+      </section>
+      <section>
+        <h4>Size</h4>
+        <div class="seg" style="margin-bottom:10px"><span>0.5×</span><span class="on">1×</span><span>2×</span><span>Custom</span></div>
+        <div class="two"><div class="fl"><label>Width</label><input class="in" value="2400 px"></div><div class="fl"><label>Height</label><input class="in" value="3000 px"></div></div>
+        <div class="two"><div class="fl"><label>Resample</label><select class="in"><option>Bicubic</option><option>Bilinear</option><option>Nearest neighbor</option></select></div><div class="fl"><label>Resolution (embedded)</label><input class="in" value="300 ppi"></div></div>
+      </section>
+      <section>
+        <h4>What to export</h4>
+        <div class="seg" style="margin-bottom:10px"><span class="on">Canvas</span><span>Selection</span><span>Each layer</span></div>
+        <div class="row"><span class="chk"><i></i>Trim transparent pixels</span></div>
+        <div class="row"><span class="chk on"><i></i>Embed sRGB profile</span></div>
+        <div class="row"><span class="lbl" style="width:70px">Metadata</span><span class="sel" style="flex:1">None</span></div>
+      </section>
+    </div>
+  </div>
+  <div class="mf"><span class="note">⇧⌘' quick-exports a PNG with these settings</span><span class="btn ghost" data-close>Cancel</span><span class="btn pri" data-close>Export…</span></div>
+</div></div>
+
+<div id="mnav"></div>
+
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const ic = p => `<svg class="i" viewBox="0 0 24 24">${p}</svg>`;
+const ICON = {
+  move:'<path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/>',
+  rect:'<rect x="4" y="5" width="16" height="14" stroke-dasharray="3 2.4"/>',
+  ellipse:'<ellipse cx="12" cy="12" rx="8.5" ry="6.5" stroke-dasharray="3 2.4"/>',
+  lasso:'<path d="M5 10c0-3.5 3.5-6 7.5-6S20 6.5 20 9.5 16.5 15 12 15c-2 0-4-.5-5.5-1.5M6.5 13.5c-1 1.5-.5 3.5 1.5 3.5M8 17c0 2-1.5 3-3 3"/>',
+  selbrush:'<circle cx="9.5" cy="9.5" r="6" stroke-dasharray="2.6 2.2"/><path d="M14 14l6.5 6.5"/>',
+  crop:'<path d="M7 3v14h14M3 7h14v14"/>',
+  dropper:'<path d="M17 3.5a2.1 2.1 0 013 3l-2.5 2.5-3-3zM14.5 6.5L5 16l-1 4 4-1 9.5-9.5"/>',
+  brush:'<path d="M20 3.5L10.5 13M10.5 13c-2-.6-4.6.6-4.6 3.4 0 1.6-.9 2.6-2.4 3.1 3.2 1.6 7.8.4 8.3-3.1.2-1.5-.4-2.8-1.3-3.4z"/>',
+  eraser:'<path d="M8 20h12M5.5 14.5l8-8a2 2 0 012.8 0l2.2 2.2a2 2 0 010 2.8L12 18H8.5zM9 11l5 5"/>',
+  fill:'<path d="M5 11l6-6 7 7-6 6a2 2 0 01-2.8 0L5 13.8a2 2 0 010-2.8zM5 12h13M20 15s1.5 2 1.5 3a1.5 1.5 0 01-3 0c0-1 1.5-3 1.5-3z"/>',
+  gradient:'<rect x="4" y="4" width="16" height="16" rx="2.5"/><rect x="5" y="5" width="4.5" height="14" fill="currentColor" stroke="none" opacity=".9"/><rect x="9.5" y="5" width="5" height="14" fill="currentColor" stroke="none" opacity=".45"/>',
+  text:'<path d="M5 6.5V4.5h14v2M12 4.5v15M9 19.5h6"/>',
+  hand:'<path d="M8 13V6a1.5 1.5 0 013 0v5M11 11V4.5a1.5 1.5 0 013 0V11M14 11V6a1.5 1.5 0 013 0v7c0 4-2.5 7-6 7-2.5 0-4-1-5.5-3L3.5 13.5a1.5 1.5 0 012.3-1.9L8 14"/>',
+  zoom:'<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5M8 10.5h5M10.5 8v5"/>',
+  folder:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',
+  chain:'<path d="M10 14a4 4 0 005.66 0l3-3a4 4 0 00-5.66-5.66l-1 1M14 10a4 4 0 00-5.66 0l-3 3a4 4 0 005.66 5.66l1-1"/>',
+  adj:'<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 010 16z" fill="currentColor"/>',
+  eye:'<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  modeNew:'<rect x="5" y="5" width="14" height="14" rx="1"/>',
+  modeAdd:'<rect x="3" y="3" width="11" height="11" rx="1"/><rect x="10" y="10" width="11" height="11" rx="1" fill="currentColor" fill-opacity=".35"/>',
+  modeSub:'<rect x="3" y="3" width="11" height="11" rx="1" fill="currentColor" fill-opacity=".35"/><rect x="10" y="10" width="11" height="11" rx="1"/>',
+  modeInt:'<rect x="3" y="3" width="11" height="11" rx="1"/><rect x="10" y="10" width="11" height="11" rx="1"/><rect x="10" y="10" width="4" height="4" fill="currentColor"/>',
+  gLin:'<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 20L20 4"/>',
+  gRad:'<rect x="4" y="4" width="16" height="16" rx="1"/><circle cx="12" cy="12" r="4"/>',
+  gAng:'<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 12L20 12M12 12l5-6"/>',
+  gRef:'<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 4v16M8 4v16M16 4v16" stroke-opacity=".5"/>',
+  gDia:'<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M12 7l5 5-5 5-5-5z"/>',
+  alL:'<path d="M4 6h16M4 10h10M4 14h16M4 18h10"/>', alC:'<path d="M4 6h16M7 10h10M4 14h16M7 18h10"/>', alR:'<path d="M4 6h16M10 10h10M4 14h16M10 18h10"/>',
+  check:'<path d="M5 12l5 5 9-10"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  refpt:'<rect x="4" y="4" width="16" height="16" rx="1" stroke-dasharray="2 2"/><circle cx="12" cy="12" r="2" fill="currentColor"/>',
+  cas:'<path d="M3 12h18M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/><rect x="9" y="8" width="6" height="8" rx="1"/>',
+  warp:'<path d="M4 8q8-6 16 0M4 16q8-6 16 0M4 8v8M20 8v8M12 5v8"/>',
+  pressure:'<path d="M4 20c4-1 6-6 8-10s4-6 8-6"/><circle cx="12" cy="10" r="2"/>',
+};
+
+/* ---------- tools ---------- */
+const TOOLS = [
+  ['move','Move','V'],null,
+  ['rect','Rectangular marquee','M'],['ellipse','Elliptical marquee','M'],['lasso','Lasso / Polygonal lasso','L'],['selbrush','Selection brush','W'],null,
+  ['crop','Crop','C'],['dropper','Eyedropper','I'],null,
+  ['brush','Brush','B'],['eraser','Eraser','E'],['fill','Fill (paint bucket)','G'],['gradient','Gradient','G'],null,
+  ['text','Text','T'],null,
+  ['hand','Hand','H'],['zoom','Zoom','Z'],
+];
+let tool = 'ellipse', screen = 'workspace';
+function renderTools(){
+  $('#tools').innerHTML = TOOLS.map(t => t ? `<button class="tool ${t[0]===tool?'on':''}" data-tool="${t[0]}">${ic(ICON[t[0]])}<span class="tip">${t[1]}<em>${t[2]}</em></span></button>` : '<div class="tsep"></div>').join('')
+    + `<div class="fgbg"><div class="fg"></div><div class="bg"></div></div>`;
+}
+$('#tools').addEventListener('click', e => { const b = e.target.closest('[data-tool]'); if (b) setTool(b.dataset.tool); });
+
+const seg = (items, on=0) => `<span class="seg">${items.map((t,i)=>`<span class="${i===on?'on':''}">${t}</span>`).join('')}</span>`;
+const fld = (v,c='') => `<span class="fld ${c}">${v}</span>`;
+const sel = v => `<span class="sel">${v}</span>`;
+const chk = (t,on) => `<span class="chk ${on?'on':''}"><i></i>${t}</span>`;
+const og = (...x) => `<span class="og">${x.join('')}</span>`;
+const L = t => `<span class="lbl">${t}</span>`;
+const selModes = seg([ic(ICON.modeNew),ic(ICON.modeAdd),ic(ICON.modeSub),ic(ICON.modeInt)].map(s=>s.replace('class="i"','class="i s"')));
+const brushCore = (sz,h) => og(`<span class="dot"></span>`, fld(sz+' px'), L('Hardness'), fld(h+'%'));
+
+const OPTIONS = {
+  move: () => og(chk('Auto-select',true), sel('Layer')) + og(chk('Show transform controls',true)) + og(L('Align'), seg(['⇤','⇹','⇥','⤒','⇳','⤓'],-1)) + og(L('Snap'), chk('Guides',true), chk('Canvas',true), chk('Layers',false)),
+  rect: () => og(selModes) + og(L('Feather'), fld('0 px')) + og(L('Style'), sel('Normal'), L('W'), fld('—'), L('H'), fld('—')) + og(`<span class="btn">Select and mask…</span>`),
+  ellipse: () => og(selModes) + og(L('Feather'), fld('0 px')) + og(chk('Anti-alias',true)) + og(L('Style'), sel('Fixed ratio'), L('W'), fld('1'), L('H'), fld('1')),
+  lasso: () => og(selModes) + og(L('Type'), seg(['Freehand','Polygonal'])) + og(L('Feather'), fld('0 px')) + og(chk('Anti-alias',true)),
+  selbrush: () => og(seg(['Add','Subtract'])) + brushCore(80,60) + og(L('Feather'), fld('2 px')) + og(chk('Show as overlay while painting',true)),
+  crop: () => og(L('Ratio'), sel('Original'), fld('8 in'), L('×'), fld('10 in'), fld('300 ppi')) + og(`<span class="btn">Clear</span>`) + og(chk('Delete cropped pixels',false)) + og(L('Overlay'), sel('Rule of thirds')),
+  dropper: () => og(L('Sample size'), sel('3 × 3 average')) + og(L('Sample'), sel('All layers')) + og(chk('Show sampling ring',true)),
+  brush: () => brushCore(40,80) + og(L('Mode'), sel('Normal')) + og(L('Opacity'), fld('100%'), L('Flow'), fld('100%')) + og(L('Smoothing'), fld('20%')) + og(L('Pressure'), seg(['Size','Opacity','Off'])),
+  eraser: () => brushCore(60,50) + og(L('Mode'), sel('Brush')) + og(L('Opacity'), fld('100%'), L('Flow'), fld('100%')) + og(chk('Erase to transparent',true)),
+  fill: () => og(L('Source'), sel('Foreground')) + og(L('Mode'), sel('Normal'), L('Opacity'), fld('100%')) + og(L('Tolerance'), fld('32')) + og(chk('Anti-alias',true), chk('Contiguous',true), chk('All layers',false)),
+  gradient: () => og(`<span class="gchip" title="Click: gradient editor" data-goto="grad" style="cursor:pointer"></span>`) + og(seg(['gLin','gRad','gAng','gRef','gDia'].map(k=>ic(ICON[k]).replace('class="i"','class="i s"')))) + og(L('Creates'), seg(['Pixels','Fill layer'],1)) + og(L('Mode'), sel('Normal'), L('Opacity'), fld('100%')) + og(chk('Reverse',false), chk('Dither',true), chk('Transparency',true)),
+  text: () => og(sel('Archivo Black'), sel('Regular')) + og(fld('144 pt'), L('≈ 600 px at 300 ppi')) + og(L('AA'), sel('Sharp')) + og(seg([ic(ICON.alL),ic(ICON.alC),ic(ICON.alR)].map(s=>s.replace('class="i"','class="i s"')),1)) + og(`<i style="width:18px;height:18px;border-radius:4px;background:#f3efe6;display:block;box-shadow:inset 0 0 0 1px #000"></i>`) + og(`<span class="btn" data-goto="warp">${ic(ICON.warp).replace('class="i"','class="i s"')}Warp text</span>`),
+  hand: () => og(chk('Scroll all windows',false)) + og(`<span class="btn">100%</span><span class="btn">Fit screen</span><span class="btn">Fill screen</span>`),
+  zoom: () => og(seg(['＋','－'])) + og(chk('Resize windows to fit',false), chk('Scrubby zoom',true)) + og(`<span class="btn">100%</span><span class="btn">Fit screen</span>`),
+  fx: () => og(L('Quality'), seg(['Draft','Good','Best'],1)) + og(chk('Live preview',true)) + og(L('Large documents preview at screen size and render full size on Apply')),
+  cas: () => og(L('Applies to'), seg(['Layer','Whole canvas'],1)) + og(L('W'), fld('3600 px','w'), fld('150%'), L('H'), fld('3000 px','w'), fld('100%')) + og(L('Amount'), fld('100%')) + og(L('Protect'), sel('Selection: sun + STLV'), chk('Show protected',true)) + og(L('Preview'), sel('Live, ¼ res')) + og(`<span class="btn" data-goto="workspace">${ic(ICON.x).replace('class="i"','class="i s"')}</span><span class="btn pri" data-goto="workspace">${ic(ICON.check).replace('class="i"','class="i s"')}</span>`),
+  transform: () => og(ic(ICON.refpt)) + og(L('X'), fld('1200 px','w'), L('Y'), fld('2385 px','w')) + og(L('W'), fld('100%'), L('H'), fld('100%')) + og(L('∠'), fld('0°')) + og(L('Mode'), seg(['Free','Distort','Perspective','Warp'],3)) + og(L('Warp'), sel('Arc'), L('Bend'), fld('+38%'), L('Grid'), sel('3 × 3')) + og(L('Interp.'), sel('Bicubic')) + og(`<span class="btn" data-goto="workspace">${ic(ICON.x).replace('class="i"','class="i s"')}</span><span class="btn pri" data-goto="workspace">${ic(ICON.check).replace('class="i"','class="i s"')}</span>`),
+};
+function setTool(t){
+  tool = t; renderTools();
+  const meta = TOOLS.find(x => x && x[0]===t);
+  const mode = ['warp','cas','fx'].includes(screen) ? screen : null;
+  const name = {warp:'Warp (free transform)', cas:'Content-aware scale', fx:'Filters + adjustments'}[mode] || meta[1];
+  const glyph = mode ? ICON[mode] : ICON[t];
+  $('#options').innerHTML = `<span class="ob-tool">${ic(glyph)}<span style="color:var(--text)">${name}</span></span>` + (mode==='warp' ? OPTIONS.transform() : mode==='cas' ? OPTIONS.cas() : mode==='fx' ? OPTIONS.fx() : OPTIONS[t]());
+}
+$('#options').addEventListener('click', e => {
+  const s = e.target.closest('.seg>span'); if (s){ s.parentNode.querySelectorAll('span').forEach(x=>x.classList.toggle('on', x===s)); }
+  const c = e.target.closest('.chk'); if (c && !c.closest('.seg')) c.classList.toggle('on');
+});
+
+/* ---------- menus ---------- */
+const MENUS = {
+  File:[['New…','⌘N','newdoc'],['Open…','⌘O'],['Open recent','▸'],'-',['Place image…','⇧⌘P',null,['Fit inside canvas','Fill canvas','Stretch to canvas','Original size']],'-',['Save','⌘S'],['Save as…','⇧⌘S'],['Export as…','⌥⇧⌘W','export'],['Quick export as PNG',"⇧⌘'"],'-',['Close','⌘W']],
+  Edit:[['Undo brush stroke','⌘Z'],['Redo','⇧⌘Z'],['Step backward','⌥⌘Z'],'-',['Cut','⌘X'],['Copy','⌘C'],['Copy merged','⇧⌘C'],['Paste','⌘V'],['Paste in place','⇧⌘V'],'-',['Fill…','⇧F5'],['Stroke selection…'],'-',['Free transform','⌘T','warp'],['Content-aware scale','⌥⇧⌘C','cas'],['Transform','▸',null,['Scale','Rotate','Skew','Distort','Perspective','Warp','—','Rotate 90° CW','Rotate 90° CCW','Flip horizontal','Flip vertical']],'-',['Settings…','⌘,']],
+  Image:[['Image size…','⌥⌘I','imgsize'],['Canvas size…','⌥⌘C'],['Content-aware resize…','','cas'],'-',['Adjustments','▸',null,[['Brightness / Contrast…','bc'],['Levels…','levels'],['Curves…','curves'],['Hue / Saturation…','hs'],['Vibrance…','vib'],['Black & White…','bw'],['Invert','invert'],['Dehaze…','dehaze']]],['Rotate canvas','▸',null,['90° CW','90° CCW','180°','Flip horizontal','Flip vertical']],'-',['Crop to selection'],['Trim transparent…']],
+  Layer:[['New layer','⇧⌘N'],['Duplicate layer','⌘J'],['Delete layer'],['Group layers','⌘G'],['Ungroup','⇧⌘G'],'-',['New adjustment layer','▸',null,[['Brightness / Contrast…','bc'],['Levels…','levels'],['Curves…','curves'],['Hue / Saturation…','hs'],['Vibrance…','vib'],['Black & White…','bw'],['Invert','invert'],['Dehaze…','dehaze']]],['Layer mask','▸',null,['Reveal all','Hide all','Reveal selection','Hide selection','—','Apply mask','Delete mask','Disable mask']],['New fill layer','▸',null,['Solid color…','Gradient…']],['Layer style','▸',null,['Gradient overlay…','Clear layer style']],['Edit gradient…','','grad'],'-',['Create clipping mask','⌥⌘G'],['Rasterize'],'-',['Merge down','⌘E'],['Merge visible','⇧⌘E'],['Flatten image']],
+  Select:[['All','⌘A'],['Deselect','⌘D'],['Reselect','⇧⌘D'],['Inverse','⇧⌘I'],'-',['Feather…','⇧F6'],['Expand…'],['Contract…'],['Smooth…'],'-',['Select layer pixels','⌘-click thumb']],
+  Filter:[['Last filter: Zoom blur','⌃⌘F','fx'],'-',['Blur','▸',null,[['Gaussian blur…','gauss'],['Box blur…','box'],['Motion blur…','motion'],['Zoom blur…','zoom'],['Spin blur…','spin']]],['Pixelate','▸',null,[['Mosaic…','mosaic'],['Crystallize…','crystal'],['Color halftone…','halftone']]],['Code','▸',null,[['ASCII…','ascii'],['Code rain…','rain']]],['Generative','▸',null,[['Point cloud…','cloud']]],'-',['Apply live filters (bake)']],
+  View:[['Zoom in','⌘+'],['Zoom out','⌘−'],['Fit on screen','⌘0'],['100%','⌘1'],'-',['✓ Rulers','⌘R'],['✓ Guides','⌘;'],['✓ Snap','⇧⌘;'],['Grid',"⌘'"],'-',['New guide…'],['New guide layout…'],['Lock guides','⌥⌘;'],['Clear guides'],'-',['Ruler units','▸',null,['Pixels','Inches','Centimeters','Millimeters','Points']]],
+  Window:[['✓ Color'],['✓ Properties'],['✓ Layers'],['History'],'-',['Reset workspace']],
+};
+$('#menus').innerHTML = Object.entries(MENUS).map(([n,items]) => `<div class="menu"><button>${n}</button><div class="drop">${items.map(it => it==='-' ? '<div class="sep"></div>' :
+  `<div class="mi" ${it[2]?`data-goto="${it[2]}"`:''}><span>${it[0]}</span><span class="k">${it[1]||''}</span>${it[3]?`<div class="sub">${it[3].map(s=>s==='—'?'<div class="sep"></div>':(Array.isArray(s) ? `<div class="mi" data-goto="fx" data-fx="${s[1]}"><span>${s[0]}</span></div>` : `<div class="mi" ${s==='Warp'?'data-goto="warp"':''}><span>${s}</span></div>`)).join('')}</div>`:''}</div>`).join('')}</div></div>`).join('');
+document.addEventListener('click', e => {
+  const m = e.target.closest('.menu>button');
+  const open = $('.menu.open');
+  if (m){ const p = m.parentNode; const was = p.classList.contains('open'); $$('.menu').forEach(x=>x.classList.remove('open')); if(!was) p.classList.add('open'); return; }
+  if (!e.target.closest('.drop') && open) open.classList.remove('open');
+  const g = e.target.closest('[data-goto]'); if (g){ $$('.menu').forEach(x=>x.classList.remove('open')); if (g.dataset.fx) fx = g.dataset.fx; go(g.dataset.goto); }
+  if (e.target.closest('[data-close]')) go('workspace');
+});
+$('#menus').addEventListener('mouseover', e => { const m = e.target.closest('.menu'); if (m && $('.menu.open') && !m.classList.contains('open')){ $$('.menu').forEach(x=>x.classList.remove('open')); m.classList.add('open'); } });
+
+/* ---------- layers ---------- */
+const LAYERS = [
+  {id:'text', name:'STLV', kind:'Text · Archivo Black 144 pt', mode:'Normal', op:100, badges:['T','warp']},
+  {id:'stroke', name:'stroke', kind:'Pixel', mode:'Normal', op:80},
+  {id:'sky', name:'sky', kind:'Group · 3 layers', mode:'Pass through', op:100, group:true},
+  {id:'haze', name:'haze', kind:'Gradient fill · transparent → magenta', mode:'Screen', op:100, badges:['fill'], child:true},
+  {id:'mtn', name:'mountains', kind:'Pixel · mask', mode:'Normal', op:100, mask:true, child:true},
+  {id:'sun', name:'sun', kind:'Pixel', mode:'Normal', op:100, fx:'Gradient overlay', child:true},
+  {id:'bg', name:'Background', kind:'Pixel · locked', mode:'Normal', op:100, lock:true},
+];
+let activeLayer = 'sun';
+function renderLayers(){
+  const fxOn = screen==='fx', F = fxOn && FX[fx];
+  const list = F && F.adj ? [{id:'adj', name:F.name+' 1', kind:'Adjustment layer', mode:'Normal', op:100, adjrow:true}, ...LAYERS] : LAYERS;
+  $('#layers').innerHTML = list.map(l => `
+    <div class="layer ${(F && F.adj ? l.adjrow : l.id===activeLayer)?'on':''} ${l.child?'child':''} ${l.group||l.adjrow?'grp':''}" data-layer="${l.id}">
+      <span class="eye">${ic(ICON.eye).replace('class="i"','class="i s"')}</span>
+      <span class="thumbs">${l.adjrow ? `<span class="thumb">${ic(ICON.adj)}</span>` : l.group ? `<span class="thumb">${ic(ICON.folder)}</span>` : `<span class="thumb"><svg viewBox="0 0 2400 3000"><use href="#L-${l.id}"/></svg></span>`}${l.mask?`<span class="mlink">${ic(ICON.chain).replace('class="i"','class="i s"')}</span><span class="thumb mask" title="Layer mask: white shows, black hides"><svg viewBox="0 0 2400 3000"><use href="#M-${l.id}"/></svg></span>`:''}</span>
+      <span class="lname"><b>${l.name}</b><small>${l.mode}${l.op<100?' · '+l.op+'%':''} · ${l.kind}</small></span>
+      <span class="badges">${(l.badges||[]).map(b=>`<span class="badge">${b}</span>`).join('')}${l.fx?'<span class="badge fx">fx</span>':''}${l.lock?ic(ICON.lock).replace('class="i"','class="i s"'):''}</span>
+    </div>${l.fx?`<div class="fxrow" data-goto="grad" style="cursor:pointer"><span class="eye">${ic(ICON.eye).replace('class="i"','class="i s"')}</span><span class="gdot"></span>${l.fx}</div>`:''}${F && !F.adj && fxTarget==='layer' && l.id===activeLayer ? `<div class="fxrow"><span class="eye">${ic(ICON.eye).replace('class="i"','class="i s"')}</span><span class="badge fx">live</span>${F.name}</div>` : ''}`).join('');
+  const l = LAYERS.find(x=>x.id===activeLayer);
+  $('#blendSel').textContent = l.mode;
+  $('#tabLayer').textContent = l.name;
+  renderProps();
+}
+$('#layers').addEventListener('click', e => { const r = e.target.closest('[data-layer]'); if (r && r.dataset.layer !== 'adj'){ activeLayer = r.dataset.layer; renderLayers(); if (screen==='fx') fxSchedule(); }});
+
+function renderProps(){
+  if (screen==='fx'){ $('#props').innerHTML = fxPanel(); return; }
+  const P = {
+    sun: `<div class="row"><b>Pixel layer</b><span class="lbl" style="margin-left:auto">sun</span></div>
+      <div class="grid2"><span class="kv"><span class="lbl">W</span>${fld('880 px')}</span><span class="kv"><span class="lbl">H</span>${fld('880 px')}</span><span class="kv"><span class="lbl">X</span>${fld('1210 px')}</span><span class="kv"><span class="lbl">Y</span>${fld('890 px')}</span></div>
+      <div class="row" style="margin-top:10px"><span class="chk on"><i></i></span><b>Gradient overlay</b><span class="gchip" data-goto="grad" style="width:70px;margin-left:auto;cursor:pointer;background:linear-gradient(90deg,#ffb347,#ff3d8b)"></span></div>
+      <div class="grid2"><span class="kv">${L('Mode')}${sel('Normal')}</span><span class="kv">${L('Opacity')}${fld('100%')}</span><span class="kv">${L('Style')}${sel('Linear')}</span><span class="kv">${L('Angle')}${fld('90°')}</span></div>`,
+    text: `<div class="row"><b>Text layer</b><span class="lbl" style="margin-left:auto">STLV</span></div>
+      <div class="row">${sel('Archivo Black')}${fld('144 pt')}</div>
+      <div class="grid2"><span class="kv">${L('Track')}${fld('20')}</span><span class="kv">${L('Lead')}${fld('Auto')}</span></div>
+      <div class="row" style="margin-top:10px"><b>Warp</b><span class="lbl" style="margin-left:auto">Arc · bend +38%</span></div>
+      <div class="row lbl">Stays editable text; distort/perspective rasterize after a prompt.</div>`,
+    haze: `<div class="row"><b>Gradient fill layer</b></div>
+      <div class="row"><span class="gchip" data-goto="grad" style="flex:1;cursor:pointer;background:linear-gradient(90deg,rgba(255,79,216,0),#ff4fd8,#5a3cff),var(--checker);background-size:auto,8px 8px"></span></div>
+      <div class="grid2"><span class="kv">${L('Style')}${sel('Linear')}</span><span class="kv">${L('Angle')}${fld('90°')}</span><span class="kv">${L('Scale')}${fld('100%')}</span><span class="kv">${chk('Reverse',false)}</span></div>
+      <div class="row lbl" style="margin-top:6px">Starts fully transparent at the top.</div>`,
+  };
+  const def = l => `<div class="row"><b>Pixel layer</b><span class="lbl" style="margin-left:auto">${l}</span></div><div class="grid2"><span class="kv"><span class="lbl">W</span>${fld('2400 px')}</span><span class="kv"><span class="lbl">H</span>${fld('3000 px')}</span><span class="kv"><span class="lbl">X</span>${fld('0 px')}</span><span class="kv"><span class="lbl">Y</span>${fld('0 px')}</span></div>`;
+  $('#props').innerHTML = P[activeLayer] || def(LAYERS.find(x=>x.id===activeLayer).name);
+}
+
+$$('[data-ptab]').forEach(t => t.onclick = () => {
+  $$('[data-ptab]').forEach(x=>x.classList.toggle('on', x===t));
+  $('#layersPane').classList.toggle('hide', t.dataset.ptab!=='layers');
+  $('#historyPane').classList.toggle('hide', t.dataset.ptab!=='history');
+});
+$('#historyPane').innerHTML = ['New document','Gradient fill layer','Brush tool','Elliptical marquee','Fill','Gradient overlay','New text layer','Warp text','Elliptical marquee'].map((h,i,a)=>`<div class="${i===a.length-1?'on':''}">${h}</div>`).join('') + '<div class="fut">(redo states appear dimmed)</div>';
+
+/* ---------- viewport, rulers, guides ---------- */
+const DH = 3000; let DW = 2400;
+let Z = .2;
+const guides = [{a:'v',p:150},{a:'v',p:1200},{a:'v',p:2250},{a:'h',p:150},{a:'h',p:1330},{a:'h',p:2850}];
+let cursor = null, drag = null;
+function layout(){
+  const vp = $('#viewport').getBoundingClientRect();
+  Z = Math.min((vp.width-90)/DW, (vp.height-70)/DH);
+  $('#doc').style.width = DW*Z+'px'; $('#doc').style.height = DH*Z+'px';
+  $$('.zv').forEach(e => e.textContent = (Z*100).toFixed(1).replace(/\.0$/,''));
+  drawRulers(); drawGuides();
+}
+function origin(){ const vp = $('#viewport').getBoundingClientRect(), d = $('#doc').getBoundingClientRect(); return {x:d.left-vp.left, y:d.top-vp.top, vp}; }
+function drawRuler(cv, horiz){
+  const dpr = devicePixelRatio||1, r = cv.getBoundingClientRect();
+  cv.width = r.width*dpr; cv.height = r.height*dpr;
+  const c = cv.getContext('2d'); c.scale(dpr,dpr);
+  const cs = getComputedStyle(document.documentElement), V = n => cs.getPropertyValue(n).trim();
+  c.fillStyle = V('--panel'); c.fillRect(0,0,r.width,r.height);
+  const o = origin(), off = horiz ? o.x : o.y, len = horiz ? r.width : r.height;
+  const step = 100, major = 500;
+  c.strokeStyle = V('--dim'); c.fillStyle = V('--dim'); c.font = '9px Inter'; c.lineWidth = 1;
+  const start = Math.floor(-off/Z/step)*step;
+  for (let d = start; d*Z+off < len; d += step){
+    const s = Math.round(d*Z+off)+.5, m = d % major === 0, h = m ? 20 : (d % 250 === 0 ? 8 : 5);
+    c.beginPath();
+    if (horiz){ c.moveTo(s, 20); c.lineTo(s, 20-h); } else { c.moveTo(20, s); c.lineTo(20-h, s); }
+    c.stroke();
+    if (m){ if (horiz) c.fillText(d, s+3, 9); else { c.save(); c.translate(9, s+3); c.rotate(-Math.PI/2); c.textAlign='right'; c.fillText(d,0,0); c.restore(); } }
+  }
+  if (cursor){ c.strokeStyle = V('--accent'); const s = Math.round((horiz?cursor.x:cursor.y)*Z+off)+.5; c.beginPath(); if (horiz){c.moveTo(s,0);c.lineTo(s,20);} else {c.moveTo(0,s);c.lineTo(20,s);} c.stroke(); }
+}
+function drawRulers(){ drawRuler($('#rulerT'), true); drawRuler($('#rulerL'), false); }
+function drawGuides(){
+  const o = origin();
+  $('#guides').innerHTML = guides.map((g,i) => `<div class="guide ${g.a}" data-g="${i}" style="${g.a==='h'?'top:'+(o.y+g.p*Z)+'px':'left:'+(o.x+g.p*Z)+'px'}"></div>`).join('');
+}
+function docPt(e){ const o = origin(); return {x:Math.round((e.clientX-o.vp.left-o.x)/Z), y:Math.round((e.clientY-o.vp.top-o.y)/Z)}; }
+$('#viewport').addEventListener('mousemove', e => { cursor = docPt(e); $('#cursor').textContent = `X ${cursor.x}  Y ${cursor.y} px`; drawRulers(); });
+$('#viewport').addEventListener('mouseleave', () => { cursor = null; drawRulers(); $('#cursor').textContent = 'X — Y —'; });
+// drag a new guide out of a ruler, or move an existing one; drop it back on a ruler to delete it
+$('#rulerT').addEventListener('mousedown', e => { guides.push({a:'h',p:0}); drag = guides.length-1; e.preventDefault(); });
+$('#rulerL').addEventListener('mousedown', e => { guides.push({a:'v',p:0}); drag = guides.length-1; e.preventDefault(); });
+$('#guides').addEventListener('mousedown', e => { const g = e.target.closest('[data-g]'); if (g){ drag = +g.dataset.g; e.preventDefault(); } });
+window.addEventListener('mousemove', e => {
+  if (drag === null) return;
+  const g = guides[drag], p = docPt(e);
+  let v = g.a==='h' ? p.y : p.x;
+  for (const s of [0, (g.a==='h'?DH:DW)/2, g.a==='h'?DH:DW]) if (Math.abs(v-s)*Z < 6) v = s;  // snap to edges + center
+  g.p = v; drawGuides();
+  const t = $('#gtip'), o = origin();
+  t.style.display = 'block'; t.textContent = (g.a==='h'?'Y ':'X ') + v + ' px';
+  t.style.left = (e.clientX-o.vp.left+12)+'px'; t.style.top = (e.clientY-o.vp.top+12)+'px';
+});
+window.addEventListener('mouseup', e => {
+  if (drag === null) return;
+  const vp = $('#viewport').getBoundingClientRect();
+  if (e.clientX < vp.left || e.clientY < vp.top) guides.splice(drag,1);
+  drag = null; $('#gtip').style.display = 'none'; drawGuides();
+});
+window.addEventListener('resize', layout);
+
+/* ---------- filters & adjustments ----------
+   The mockup runs the real math on a preview-size raster in JS (CPU).
+   The app runs the same math as WebGL2 shaders on the full document. */
+const FX = {
+  gauss:   {name:'Gaussian blur', short:'Gaussian', grp:'Blur', p:[['radius','Radius',0,200,40,' px']]},
+  box:     {name:'Box blur', short:'Box', grp:'Blur', p:[['radius','Radius',1,200,30,' px']]},
+  motion:  {name:'Motion blur', short:'Motion', grp:'Blur', p:[['angle','Angle',-180,180,0,'°'],['dist','Distance',0,800,220,' px']]},
+  zoom:    {name:'Zoom blur', short:'Zoom', grp:'Blur', p:[['amount','Amount',0,100,35,'']], center:true},
+  spin:    {name:'Spin blur', short:'Spin', grp:'Blur', p:[['angle','Angle',0,60,14,'°']], center:true},
+  mosaic:  {name:'Mosaic', short:'Mosaic', grp:'Pixelate', p:[['cell','Cell size',4,300,70,' px']]},
+  crystal: {name:'Crystallize', short:'Crystallize', grp:'Pixelate', p:[['cell','Cell size',6,300,80,' px']]},
+  halftone:{name:'Color halftone', short:'Color halftone', grp:'Pixelate', p:[['rad','Max radius',6,120,28,' px'],['c','Cyan angle',0,360,108,'°'],['m','Magenta angle',0,360,162,'°'],['y','Yellow angle',0,360,90,'°'],['k','Black angle',0,360,45,'°']]},
+  ascii:   {name:'ASCII', short:'ASCII', grp:'Code', p:[['cells','Cells across',16,200,64,''],['bg','Picture',0,100,20,'%'],['flick','Digit flicker',0,60,16,'%'],['band','Band',0,100,0,'%'],['seed','Seed',0,999,7,''],['col','Color',['FG / BG swatches','Image'],0]]},
+  rain:    {name:'Code rain', short:'Code rain', grp:'Code', p:[['cells','Columns',12,140,44,''],['dens','Density',0,100,72,'%'],['trail','Trail',20,300,100,'%'],['pic','Picture',0,100,78,'%'],['seed','Seed',0,999,42,''],['col','Color',['FG / BG swatches','Image'],0]]},
+  cloud:   {name:'Point cloud', short:'Point cloud', grp:'Generative', p:[['dens','Dots across',12,160,54,''],['size','Dot size',20,200,100,'%'],['depth','Depth',0,200,100,'%'],['turn','Turn',-80,80,28,'°'],['thr','Threshold',0,60,8,'%'],['bgm','Background',['Black','Transparent'],0],['col','Color',['FG / BG swatches','Image'],0]]},
+  bc:      {name:'Brightness / Contrast', short:'Bright / Contrast', grp:'Adjust', adj:true, p:[['b','Brightness',-150,150,20,''],['c','Contrast',-50,100,30,'']]},
+  levels:  {name:'Levels', short:'Levels', grp:'Adjust', adj:true, hist:true, p:[['ib','Input black',0,250,20,''],['g','Midtones',20,500,125,''],['iw','Input white',5,255,230,''],['ob','Output black',0,255,0,''],['ow','Output white',0,255,255,'']]},
+  curves:  {name:'Curves', short:'Curves', grp:'Adjust', adj:true, curve:true, p:[['ch','Channel',['RGB','Red','Green','Blue'],0]]},
+  hs:      {name:'Hue / Saturation', short:'Hue / Sat', grp:'Adjust', adj:true, p:[['h','Hue',-180,180,-35,'°'],['s','Saturation',-100,100,25,''],['l','Lightness',-100,100,0,'']]},
+  vib:     {name:'Vibrance', short:'Vibrance', grp:'Adjust', adj:true, p:[['v','Vibrance',-100,100,45,''],['s','Saturation',-100,100,0,'']]},
+  bw:      {name:'Black & White', short:'Black & White', grp:'Adjust', adj:true, p:[['r','Reds',-200,300,40,'%'],['y','Yellows',-200,300,60,'%'],['g','Greens',-200,300,40,'%'],['c','Cyans',-200,300,60,'%'],['b','Blues',-200,300,20,'%'],['m','Magentas',-200,300,80,'%']]},
+  invert:  {name:'Invert', short:'Invert', grp:'Adjust', adj:true, p:[]},
+  dehaze:  {name:'Dehaze', short:'Dehaze', grp:'Adjust', adj:true, p:[['amt','Amount',-100,100,60,'']]},
+};
+let fxVisited = false, fx = 'zoom', fxTarget = 'layer', fxPreview = true, fxCenter = {x:1200, y:2380};
+const fxP = {}; for (const [k,f] of Object.entries(FX)) fxP[k] = Object.fromEntries(f.p.map(p => [p[0], Array.isArray(p[2]) ? p[3] : p[4]]));
+const fxFmt = (k, v) => k==='g' && FX[fx].hist ? (v/100).toFixed(2) : v;
+// bottom -> top, with the blend each layer uses
+const ORDER = [['bg',1,'source-over'],['sun',1,'source-over'],['mtn',1,'source-over'],['haze',1,'screen'],['stroke',.8,'source-over'],['text',1,'source-over']];
+let FXW = 0, FXH = 0, fxReady = null, fontCSS = '';
+const layerCv = {};
+const mk = (w,h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const ctx2 = c => c.getContext('2d', {willReadFrequently:true});
+async function loadFont(){ try {
+  const css = await (await fetch('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap')).text();
+  const latin = css.split('/* latin */').pop();   // Google lists several subsets; the last is basic Latin
+  const blob = await (await fetch(latin.match(/url\((https:[^)]+)\)/)[1])).blob();
+  const data = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+  fontCSS = `@font-face{font-family:'Archivo Black';src:url(${data}) format('woff2')}`;
+} catch(e){ /* falls back to a system font */ } }
+async function rasterLayer(id){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${FXW}" height="${FXH}" viewBox="0 0 2400 3000"><style>${fontCSS}</style><defs>${$('#lib defs').innerHTML}</defs><use href="#L-${id}"/></svg>`;
+  const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); await img.decode();
+  const c = mk(FXW, FXH); ctx2(c).drawImage(img, 0, 0, FXW, FXH); return c;
+}
+function fxInit(){
+  if (fxReady) return fxReady;
+  FXW = Math.round(Math.min(900, 2400*Z*(devicePixelRatio||1))); FXH = Math.round(FXW*DH/2400);
+  fxReady = (async () => { await loadFont(); for (const [id] of ORDER) layerCv[id] = await rasterLayer(id); })();
+  return fxReady;
+}
+const KP = () => FXW/2400;   // document px -> preview px
+
+// exact average of n transformed copies: 'lighter' sums premultiplied colour, so alpha averages too
+function avgCopies(src, n, xf){
+  const out = mk(src.width, src.height), c = ctx2(out);
+  c.globalCompositeOperation = 'lighter'; c.globalAlpha = 1/n;
+  for (let i = 0; i < n; i++){ c.save(); xf(c, n===1 ? 0 : i/(n-1) - .5); c.drawImage(src, 0, 0); c.restore(); }
+  return out;
+}
+// two passes (coarse, then fine between the coarse steps) give n1*n2 samples for n1+n2 draws
+function avg2(src, n1, n2, xf){ let o = avgCopies(src, n1, (c,t) => xf(c, t, 1)); if (n2 > 1) o = avgCopies(o, n2, (c,t) => xf(c, t, 1/n1)); return o; }
+function aboutCenter(c, f){ const cx = fxCenter.x*KP(), cy = fxCenter.y*KP(); c.translate(cx, cy); f(); c.translate(-cx, -cy); }
+
+function boxBlur(src, r){
+  const w = src.width, h = src.height, id = ctx2(src).getImageData(0,0,w,h), d = id.data, n = w*h;
+  r = Math.max(1, Math.round(r)); const A = new Float32Array(n*4), B = new Float32Array(n*4), win = 2*r+1;
+  for (let i = 0; i < n; i++){ const a = d[i*4+3]/255; A[i*4]=d[i*4]*a; A[i*4+1]=d[i*4+1]*a; A[i*4+2]=d[i*4+2]*a; A[i*4+3]=d[i*4+3]; }
+  const pass = (S, D, len, lines, idx) => { for (let L = 0; L < lines; L++) for (let ch = 0; ch < 4; ch++){
+    let s = 0; for (let k = -r; k <= r; k++) s += S[idx(L, Math.min(len-1, Math.max(0,k)))*4+ch];
+    for (let k = 0; k < len; k++){ D[idx(L,k)*4+ch] = s/win; s += S[idx(L, Math.min(len-1, k+r+1))*4+ch] - S[idx(L, Math.max(0, k-r))*4+ch]; } } };
+  pass(A, B, w, h, (y,x) => y*w+x); pass(B, A, h, w, (x,y) => y*w+x);
+  for (let i = 0; i < n; i++){ const a = A[i*4+3]/255 || 1; d[i*4]=A[i*4]/a; d[i*4+1]=A[i*4+1]/a; d[i*4+2]=A[i*4+2]/a; d[i*4+3]=A[i*4+3]; }
+  const o = mk(w,h); ctx2(o).putImageData(id,0,0); return o;
+}
+function mosaic(src, cell){
+  const w = src.width, h = src.height, d = ctx2(src).getImageData(0,0,w,h).data;
+  cell = Math.max(1, cell); const gw = Math.ceil(w/cell), gh = Math.ceil(h/cell), S = new Float64Array(gw*gh*5);
+  for (let y = 0; y < h; y++){ const gy = Math.floor(y/cell)*gw; for (let x = 0; x < w; x++){ const i = (y*w+x)*4, g = (gy+Math.floor(x/cell))*5, a = d[i+3];
+    S[g]+=d[i]*a; S[g+1]+=d[i+1]*a; S[g+2]+=d[i+2]*a; S[g+3]+=a; S[g+4]++; } }
+  const o = mk(w,h), c = ctx2(o);
+  for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++){ const g = (j*gw+i)*5, a = S[g+3]; if (!a) continue;
+    c.fillStyle = `rgba(${S[g]/a|0},${S[g+1]/a|0},${S[g+2]/a|0},${a/S[g+4]/255})`;
+    c.fillRect(Math.round(i*cell), Math.round(j*cell), Math.round((i+1)*cell)-Math.round(i*cell), Math.round((j+1)*cell)-Math.round(j*cell)); }
+  return o;
+}
+function crystallize(src, cell){
+  const w = src.width, h = src.height, sd = ctx2(src).getImageData(0,0,w,h).data, o = mk(w,h), oc = ctx2(o), od = oc.createImageData(w,h), D = od.data;
+  cell = Math.max(2, cell); const gw = Math.ceil(w/cell)+1, gh = Math.ceil(h/cell)+1, sx = new Float32Array(gw*gh), sy = new Float32Array(gw*gh);
+  const rnd = i => { const x = Math.sin(i*127.1+311.7)*43758.5453; return x - Math.floor(x); };   // fixed seeds: same cells every render
+  for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++){ const k = j*gw+i; sx[k] = (i+rnd(k))*cell; sy[k] = (j+rnd(k+9999))*cell; }
+  for (let y = 0; y < h; y++){ const cj = Math.floor(y/cell); for (let x = 0; x < w; x++){ const ci = Math.floor(x/cell); let best = 1e18, bk = 0;
+    for (let jj = Math.max(0,cj-1); jj <= Math.min(gh-1,cj+1); jj++) for (let ii = Math.max(0,ci-1); ii <= Math.min(gw-1,ci+1); ii++){
+      const k = jj*gw+ii, dx = sx[k]-x, dy = sy[k]-y, dd = dx*dx+dy*dy; if (dd < best){ best = dd; bk = k; } }
+    const s = (Math.min(h-1, sy[bk]|0)*w + Math.min(w-1, sx[bk]|0))*4, t = (y*w+x)*4;
+    D[t]=sd[s]; D[t+1]=sd[s+1]; D[t+2]=sd[s+2]; D[t+3]=sd[s+3]; } }
+  oc.putImageData(od,0,0); return o;
+}
+function halftone(src, p){
+  const w = src.width, h = src.height, sd = ctx2(src).getImageData(0,0,w,h).data, R = Math.max(1.5, p.rad*KP()), g = R*Math.SQRT2;
+  const o = mk(w,h), c = ctx2(o); c.fillStyle = '#fff'; c.fillRect(0,0,w,h); c.globalCompositeOperation = 'multiply';
+  const cmyk = (x, y, ch) => { const i = (Math.min(h-1,Math.max(0,y|0))*w + Math.min(w-1,Math.max(0,x|0)))*4, a = sd[i+3]/255;
+    const r = (sd[i]*a + 255*(1-a))/255, gg = (sd[i+1]*a + 255*(1-a))/255, b = (sd[i+2]*a + 255*(1-a))/255, k = 1 - Math.max(r,gg,b);
+    if (ch === 3) return k; if (k >= 1) return 0; return (1 - [r,gg,b][ch] - k)/(1 - k); };
+  const n = Math.ceil(Math.hypot(w,h)/g/2)+1;
+  [['c','#00ffff',0],['m','#ff00ff',1],['y','#ffff00',2],['k','#000000',3]].forEach(([key,col,ch]) => {
+    const a = p[key]*Math.PI/180, ca = Math.cos(a), sa = Math.sin(a); c.beginPath();
+    for (let v = -n; v <= n; v++) for (let u = -n; u <= n; u++){
+      const x = w/2 + u*g*ca - v*g*sa, y = h/2 + u*g*sa + v*g*ca; if (x < -g || y < -g || x > w+g || y > h+g) continue;
+      const r = R*Math.sqrt(cmyk(x, y, ch)); if (r < .3) continue; c.moveTo(x+r, y); c.arc(x, y, r, 0, 6.2832); }
+    c.fillStyle = col; c.fill(); });
+  c.globalCompositeOperation = 'destination-in'; c.drawImage(src, 0, 0);   // keep the layer's own transparency
+  return o;
+}
+function runFilter(src, p, opaque){
+  const w = src.width, h = src.height; let o;
+  if (fx === 'gauss'){ o = mk(w,h); const c = ctx2(o); c.filter = `blur(${p.radius*KP()}px)`; c.drawImage(src,0,0); }
+  else if (fx === 'box') o = boxBlur(src, p.radius*KP());
+  else if (fx === 'motion'){ const d = p.dist*KP(), a = -p.angle*Math.PI/180, n1 = Math.max(2, Math.min(16, Math.ceil(d/4))), n2 = Math.max(1, Math.ceil(d/n1/1.5));
+    o = avg2(src, n1, n2, (c,t,s) => c.translate(Math.cos(a)*d*s*t, Math.sin(a)*d*s*t)); }
+  else if (fx === 'zoom'){ const range = p.amount*.006, n1 = 16, n2 = Math.max(1, Math.ceil(range*FXW/n1/2));
+    o = avg2(src, n1, n2, (c,t,s) => aboutCenter(c, () => { const k = 1 + (t+.5)*range*s; c.scale(k,k); })); }
+  else if (fx === 'spin'){ const th = p.angle*Math.PI/180, n1 = 16, n2 = Math.max(1, Math.ceil(th*FXW/2/n1/1.5));
+    o = avg2(src, n1, n2, (c,t,s) => aboutCenter(c, () => c.rotate(th*t*s))); }
+  else if (fx === 'mosaic') o = mosaic(src, p.cell*KP());
+  else if (fx === 'crystal') o = crystallize(src, p.cell*KP());
+  else if (fx === 'halftone') o = halftone(src, p);
+  else if (fx === 'ascii') o = asciiFx(src, p);
+  else if (fx === 'rain') o = rainFx(src, p);
+  else if (fx === 'cloud') o = cloudFx(src, p);
+  if (opaque && !(fx === 'cloud' && p.bgm === 0)){ const c = ctx2(o); c.globalCompositeOperation = 'destination-over'; c.drawImage(src,0,0); }   // edge pixels extend, no dark rim
+  return o;
+}
+function runAdjust(c, p){
+  const w = FXW, h = FXH, id = c.getImageData(0,0,w,h), d = id.data, n = w*h, lut = new Uint8ClampedArray(256);
+  if (fx === 'bc'){ const f = p.c >= 0 ? 1 + p.c/100*1.5 : 1 + p.c/100; for (let v = 0; v < 256; v++) lut[v] = (v + p.b*.6 - 127.5)*f + 127.5; }
+  if (fx === 'levels'){ const iw = Math.max(p.iw, p.ib+1), g = p.g/100;
+    for (let v = 0; v < 256; v++) lut[v] = p.ob + (p.ow - p.ob)*Math.pow(Math.min(1, Math.max(0, (v - p.ib)/(iw - p.ib))), 1/g); }
+  if (fx === 'bc' || fx === 'levels') for (let i = 0; i < n*4; i += 4){ d[i] = lut[d[i]]; d[i+1] = lut[d[i+1]]; d[i+2] = lut[d[i+2]]; }
+  if (fx === 'hs'){ const H = p.h/360, S = p.s/100, L = p.l/100;
+    const h2r = (pp, q, t) => { t = (t+1)%1; return t < 1/6 ? pp+(q-pp)*6*t : t < .5 ? q : t < 2/3 ? pp+(q-pp)*(2/3-t)*6 : pp; };
+    for (let i = 0; i < n*4; i += 4){ const r = d[i]/255, g = d[i+1]/255, b = d[i+2]/255, mx = Math.max(r,g,b), mn = Math.min(r,g,b);
+      let hh = 0, s = 0, l = (mx+mn)/2; const dd = mx - mn;
+      if (dd){ s = l > .5 ? dd/(2-mx-mn) : dd/(mx+mn); hh = (mx===r ? (g-b)/dd + (g<b?6:0) : mx===g ? (b-r)/dd + 2 : (r-g)/dd + 4)/6; }
+      hh = (hh + H + 1) % 1; s = Math.min(1, Math.max(0, S >= 0 ? s + (1-s)*s*S*1.6 : s*(1+S))); l = L >= 0 ? l + (1-l)*L : l*(1+L);
+      if (!s){ d[i] = d[i+1] = d[i+2] = l*255; continue; }
+      const q = l < .5 ? l*(1+s) : l+s-l*s, pp = 2*l-q; d[i] = h2r(pp,q,hh+1/3)*255; d[i+1] = h2r(pp,q,hh)*255; d[i+2] = h2r(pp,q,hh-1/3)*255; } }
+  if (fx === 'invert') for (let i = 0; i < n*4; i += 4){ d[i] = 255-d[i]; d[i+1] = 255-d[i+1]; d[i+2] = 255-d[i+2]; }
+  if (fx === 'curves'){ const all = curveLut(CURVES[0]), ch = [1,2,3].map(k => curveLut(CURVES[k]));
+    for (let i = 0; i < n*4; i += 4) for (let k = 0; k < 3; k++) d[i+k] = ch[k][Math.round(all[d[i+k]])]; }
+  if (fx === 'vib'){ const V = p.v/100, S = p.s/100;
+    for (let i = 0; i < n*4; i += 4){ const r = d[i], g = d[i+1], b = d[i+2], mx = Math.max(r,g,b), mn = Math.min(r,g,b), avg = (r+g+b)/3, sat = (mx-mn)/255;
+      const k = 1 + S + V*(V > 0 ? (1-sat)*(1-sat)*1.6 : 1);   // vibrance lifts dull colours most, leaves saturated ones
+      d[i] = avg + (r-avg)*k; d[i+1] = avg + (g-avg)*k; d[i+2] = avg + (b-avg)*k; } }
+  if (fx === 'bw'){ const Wt = {r:p.r/100, y:p.y/100, g:p.g/100, c:p.c/100, b:p.b/100, m:p.m/100};
+    for (let i = 0; i < n*4; i += 4){ const r = d[i], g = d[i+1], b = d[i+2]; let mx, md, mn, pri, sec;
+      if (r >= g && r >= b){ mx = r; pri = 'r'; if (g >= b){ md = g; mn = b; sec = 'y'; } else { md = b; mn = g; sec = 'm'; } }
+      else if (g >= b){ mx = g; pri = 'g'; if (r >= b){ md = r; mn = b; sec = 'y'; } else { md = b; mn = r; sec = 'c'; } }
+      else { mx = b; pri = 'b'; if (r >= g){ md = r; mn = g; sec = 'm'; } else { md = g; mn = r; sec = 'c'; } }
+      d[i] = d[i+1] = d[i+2] = mn + (md-mn)*Wt[sec] + (mx-md)*Wt[pri]; } }      // Photoshop's B&W mix: primary + secondary weight
+  if (fx === 'dehaze') dehaze(d, w, h, p.amt/100);
+  c.putImageData(id,0,0);
+}
+// dark-channel prior (He et al.): the haze map is solved at 1/4 size, smoothed, then sampled back up
+function dehaze(d, w, h, amt){
+  const s = 4, lw = Math.ceil(w/s), lh = Math.ceil(h/s), dk = new Float32Array(lw*lh);
+  const darkAt = (A) => { for (let y = 0; y < lh; y++) for (let x = 0; x < lw; x++){ let m = 1;
+      for (let yy = y*s; yy < Math.min(h, y*s+s); yy++) for (let xx = x*s; xx < Math.min(w, x*s+s); xx++){ const i = (yy*w+xx)*4; m = Math.min(m, d[i]/255/A[0], d[i+1]/255/A[1], d[i+2]/255/A[2]); }
+      dk[y*lw+x] = m; }
+    const r = 3, t = new Float32Array(lw*lh);   // min filter over a (2r+1) patch, separable
+    for (let y = 0; y < lh; y++) for (let x = 0; x < lw; x++){ let m = 9; for (let k = -r; k <= r; k++) m = Math.min(m, dk[y*lw + Math.min(lw-1, Math.max(0, x+k))]); t[y*lw+x] = m; }
+    for (let y = 0; y < lh; y++) for (let x = 0; x < lw; x++){ let m = 9; for (let k = -r; k <= r; k++) m = Math.min(m, t[Math.min(lh-1, Math.max(0, y+k))*lw+x]); dk[y*lw+x] = m; } };
+  darkAt([1,1,1]);
+  const idx = [...dk.keys()].sort((a,b) => dk[b]-dk[a]).slice(0, Math.max(1, dk.length/1000|0)), A = [0,0,0];
+  idx.forEach(k => { const i = (Math.min(h-1, (k/lw|0)*s)*w + Math.min(w-1, (k%lw)*s))*4; A[0] += d[i]/255; A[1] += d[i+1]/255; A[2] += d[i+2]/255; });
+  A.forEach((v,i) => A[i] = Math.max(.05, v/idx.length));
+  if (amt < 0){ const k = -amt*.6; for (let i = 0; i < w*h*4; i += 4) for (let c = 0; c < 3; c++) d[i+c] += (A[c]*255 - d[i+c])*k; return; }
+  darkAt(A);
+  const T = new Float32Array(lw*lh); for (let i = 0; i < T.length; i++) T[i] = 1 - .95*dk[i];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
+    const fx_ = Math.min(lw-1.001, x/s), fy = Math.min(lh-1.001, y/s), x0 = fx_|0, y0 = fy|0, ax = fx_-x0, ay = fy-y0;
+    const t = T[y0*lw+x0]*(1-ax)*(1-ay) + T[y0*lw+x0+1]*ax*(1-ay) + T[(y0+1)*lw+x0]*(1-ax)*ay + T[(y0+1)*lw+x0+1]*ax*ay;
+    const tt = Math.max(.1, 1 - amt*(1 - t)), i = (y*w+x)*4;
+    for (let c = 0; c < 3; c++) d[i+c] = ((d[i+c]/255 - A[c])/tt + A[c])*255; }
+}
+function drawHist(c){
+  const cv = $('#hist'); if (!cv) return;
+  const d = c.getImageData(0,0,FXW,FXH).data, H = new Float32Array(256);
+  for (let i = 0; i < d.length; i += 16) H[(d[i]*.2126 + d[i+1]*.7152 + d[i+2]*.0722)|0]++;
+  const hc = cv.getContext('2d'), mx = Math.max(...H), p = fxP.levels, cs = getComputedStyle(document.documentElement);
+  hc.clearRect(0,0,256,56); hc.fillStyle = cs.getPropertyValue('--muted');
+  for (let v = 0; v < 256; v++){ const bh = Math.sqrt(H[v]/mx)*50; hc.fillRect(v, 54-bh, 1, bh); }
+  const mid = p.ib + (Math.max(p.iw, p.ib+1) - p.ib)*Math.pow(.5, p.g/100);
+  hc.fillStyle = cs.getPropertyValue('--accent'); [p.ib, mid, p.iw].forEach(x => hc.fillRect(Math.round(x)-.5, 0, 1.5, 56));
+}
+let fxQueued = false;
+function fxSchedule(){ if (fxQueued) return; fxQueued = true; requestAnimationFrame(() => { fxQueued = false; fxRender(); }); }
+async function fxRender(){
+  await fxInit(); if (screen !== 'fx') return;
+  const t0 = performance.now(), f = FX[fx], p = fxP[fx], out = $('#fxview');
+  if (out.width !== FXW){ out.width = FXW; out.height = FXH; }
+  const c = ctx2(out); c.clearRect(0,0,FXW,FXH);
+  for (const [id, a, op] of ORDER){
+    let src = layerCv[id];
+    if (fxPreview && !f.adj && fxTarget === 'layer' && id === activeLayer) src = runFilter(src, p, id === 'bg');
+    c.globalAlpha = a; c.globalCompositeOperation = op; c.drawImage(src, 0, 0);
+  }
+  c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+  if (f.hist) drawHist(c);
+  if (f.curve){ const d = c.getImageData(0,0,FXW,FXH).data, H = new Float32Array(256); for (let i = 0; i < d.length; i += 16) H[(d[i]*.2126 + d[i+1]*.7152 + d[i+2]*.0722)|0]++; lastHist = H; drawCurve(); }
+  if (fxPreview && f.adj) runAdjust(c, p);
+  if (fxPreview && !f.adj && fxTarget === 'merged'){ const m = mk(FXW,FXH); ctx2(m).drawImage(out,0,0); const r = runFilter(m, p, true); c.clearRect(0,0,FXW,FXH); c.drawImage(r,0,0); }
+  const ms = $('#fxms'); if (ms) ms.textContent = `${Math.round(performance.now()-t0)} ms in JS at ${FXW}×${FXH}. The app runs it as a GPU shader.`;
+  const cm = $('#fxc'); cm.style.display = f.center && fxPreview ? 'block' : 'none';
+  cm.style.left = fxCenter.x/24 + '%'; cm.style.top = fxCenter.y/30 + '%';
+}
+function fxPanel(){
+  const f = FX[fx], lname = (LAYERS.find(x => x.id===activeLayer)||{}).name, onLayer = ORDER.some(o => o[0]===activeLayer);
+  return ['Blur','Pixelate','Code','Generative','Adjust'].map(g => `<div class="fxg"><span class="lbl">${g==='Adjust'?'Adjustments':g}</span><div class="chips">${Object.entries(FX).filter(([,x]) => x.grp===g).map(([k,x]) => `<span class="chip ${k===fx?'on':''}" data-fxk="${k}">${x.short}</span>`).join('')}</div></div>`).join('')
+    + `<div class="row" style="margin-top:4px"><b>${f.name}</b></div>`
+    + (f.adj ? `<div class="row lbl">Adjustment layer: changes everything below it. Paint its mask to limit where.</div>`
+             : `<div class="row">${L('Applies to')}<span class="seg" id="fxTgt"><span class="${fxTarget==='layer'?'on':''}" data-t="layer">${lname}</span><span class="${fxTarget==='merged'?'on':''}" data-t="merged">All visible</span></span></div>`
+               + (fxTarget==='layer' && !onLayer ? `<div class="row lbl" style="color:var(--accent)">Pick a pixel or text layer.</div>` : ''))
+    + (f.hist ? '<canvas id="hist" width="256" height="56"></canvas>' : '')
+    + (f.curve ? '<canvas id="curve" width="256" height="256"></canvas><div class="row lbl" style="font-size:10.5px">Click to add a point and drag it. Drag a point off the graph to remove it.</div>' : '')
+    + f.p.map(q => Array.isArray(q[2]) ? `<div class="sl"><span class="lbl">${q[1]}</span><span class="seg" data-segk="${q[0]}" style="grid-column:2/4">${q[2].map((o,i) => `<span class="${i===fxP[fx][q[0]]?'on':''}" data-i="${i}">${o}</span>`).join('')}</span></div>` : `<div class="sl"><span class="lbl">${q[1]}</span><input type="range" min="${q[2]}" max="${q[3]}" value="${fxP[fx][q[0]]}" data-k="${q[0]}"><span class="fld" id="v-${q[0]}">${fxFmt(q[0], fxP[fx][q[0]])}${q[5]}</span></div>`).join('')
+    + (f.center ? '<div class="row lbl">Drag on the canvas to move the center.</div>' : '')
+    + `<div class="row"><span class="chk ${fxPreview?'on':''}" id="fxPv"><i></i>Preview</span>${f.adj ? '' : '<span class="chk on" id="fxLive"><i></i>Keep editable (live filter)</span>'}</div>`
+    + '<div class="row"><span class="lbl" id="fxms" style="font-size:10.5px">rendering…</span></div>'
+    + `<div class="row" style="justify-content:flex-end"><span class="btn" data-goto="workspace">Cancel</span><span class="btn pri" data-goto="workspace">${f.adj ? 'OK' : 'Apply'}</span></div>`;
+}
+$('#props').addEventListener('click', e => {
+  if (screen !== 'fx') return;
+  const k = e.target.closest('[data-fxk]'); if (k){ fx = k.dataset.fxk; renderLayers(); fxSchedule(); return; }
+  const t = e.target.closest('#fxTgt [data-t]'); if (t){ fxTarget = t.dataset.t; renderLayers(); fxSchedule(); return; }
+  const sg = e.target.closest('[data-segk] [data-i]'); if (sg){ fxP[fx][sg.parentNode.dataset.segk] = +sg.dataset.i; sg.parentNode.querySelectorAll('span').forEach(x => x.classList.toggle('on', x===sg)); drawCurve(); fxSchedule(); return; }
+  if (e.target.closest('#fxPv')){ fxPreview = !fxPreview; e.target.closest('#fxPv').classList.toggle('on', fxPreview); fxSchedule(); }
+  if (e.target.closest('#fxLive')) e.target.closest('#fxLive').classList.toggle('on');
+});
+$('#props').addEventListener('input', e => {
+  const k = e.target.dataset.k; if (!k) return;
+  fxP[fx][k] = +e.target.value; const q = FX[fx].p.find(x => x[0]===k);
+  $('#v-'+k).textContent = fxFmt(k, +e.target.value) + q[5]; fxSchedule();
+});
+let fxDrag = false;
+const fxSetCenter = e => { const r = $('#fxview').getBoundingClientRect(); fxCenter = {x:(e.clientX-r.left)/r.width*2400, y:(e.clientY-r.top)/r.height*3000}; fxSchedule(); };
+$('#fxview').addEventListener('mousedown', e => { if (!FX[fx].center) return; fxDrag = true; fxSetCenter(e); });
+window.addEventListener('mousemove', e => { if (fxDrag) fxSetCenter(e); });
+window.addEventListener('mouseup', () => fxDrag = false);
+
+/* ---------- code + generative looks, ported from SB Machine (sb_fx.py: _ascii, _rain, _point_cloud) ----------
+   SB Machine animates them on the beat. Here they are stills: time becomes a Seed and the beat sweep a Band slider. */
+const FGC = [255,61,139], BGC = [243,239,230];   // the toolbar's foreground / background swatches
+const RAMP = ' .:-=+*#%@', DIGITS = '0123456789';
+const hash = (i, salt = 0) => { let x = Math.imul((i + 1) ^ Math.imul(salt + 1, 0x9E3779B1), 0x85EBCA6B); x ^= x >>> 13; x = Math.imul(x, 0xC2B2AE35); x ^= x >>> 16; return x >>> 0; };
+const rgba = (c, a) => `rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;
+// per cell of a cw x ch grid: summed premultiplied rgb, alpha, luma, count, and the brightest luma
+function cellStats(src, cw, ch, cols, rows){
+  const w = src.width, h = src.height, d = ctx2(src).getImageData(0,0,w,h).data, S = new Float64Array(cols*rows*6), M = new Float32Array(cols*rows);
+  for (let y = 0; y < h; y++){ const cy = Math.min(rows-1, Math.floor(y/ch)); for (let x = 0; x < w; x++){
+    const k = cy*cols + Math.min(cols-1, Math.floor(x/cw)), i = (y*w+x)*4, a = d[i+3]/255, r = d[i]*a, g = d[i+1]*a, b = d[i+2]*a, L = (.2126*r + .7152*g + .0722*b)/255;
+    S[k*6]+=r; S[k*6+1]+=g; S[k*6+2]+=b; S[k*6+3]+=a; S[k*6+4]+=L; S[k*6+5]++; if (L > M[k]) M[k] = L; } }
+  const cell = k => { const n = S[k*6+5] || 1, a = S[k*6+3]/n, al = S[k*6+3] || 1; return {a, L:S[k*6+4]/n, max:M[k], col:[S[k*6]/al, S[k*6+1]/al, S[k*6+2]/al]}; };
+  return cell;
+}
+// the picture darkened to `k` of its brightness, alpha kept (SB Machine's convertScaleAbs(img, alpha=k))
+function dimmed(src, k){ const o = mk(src.width, src.height), c = ctx2(o); c.drawImage(src,0,0);
+  c.globalCompositeOperation = 'source-atop'; c.fillStyle = `rgba(0,0,0,${1-k})`; c.fillRect(0,0,o.width,o.height); c.globalCompositeOperation = 'source-over'; return o; }
+const monoFont = px => `${Math.max(4, Math.round(px))}px Menlo, "SF Mono", monospace`;
+function asciiFx(src, p){
+  const w = src.width, h = src.height, cw = Math.max(3, Math.min(w,h)/p.cells), ch = cw*1.7, cols = Math.ceil(w/cw), rows = Math.ceil(h/ch);
+  const cell = cellStats(src, cw, ch, cols, rows), n = cols*rows, L = new Float32Array(n), C = [];
+  for (let k = 0; k < n; k++){ C[k] = cell(k); L[k] = C[k].L; }
+  const srt = Float32Array.from(L).sort(), lo = srt[n*.03|0]*255, hi = srt[n*.97|0]*255;     // stretch to the 3rd..97th percentile
+  const out = dimmed(src, p.bg/100), c = ctx2(out);
+  c.globalCompositeOperation = 'lighter'; c.font = monoFont(ch*.82); c.textAlign = 'center'; c.textBaseline = 'middle';
+  const bc = p.band > 0 ? p.band/100*rows : -1e9, bw = Math.max(2, rows*.1);
+  for (let k = 0; k < n; k++){ if (C[k].a < .05) continue;
+    const cy = k/cols|0, cx = k%cols, v = Math.min(255, Math.max(0, (L[k]*255 - lo)*255/Math.max(24, hi - lo))), lvl = Math.min(9, v*10/256|0), r = hash(k, 7);
+    const band = Math.abs(cy - bc) < bw && lvl >= 1, flick = lvl >= 4 && r % 100 < p.flick;
+    const chr = band || flick ? DIGITS[((r + Math.imul(p.seed, 2654435761)) >>> 7) % 10] : RAMP[lvl]; if (chr === ' ') continue;
+    c.fillStyle = band ? rgba(BGC, C[k].a) : rgba(p.col === 1 ? C[k].col.map(x => Math.min(255, x*1.4)) : FGC, (120 + v*135/255)/255*C[k].a);
+    c.fillText(chr, (cx+.5)*cw, (cy+.5)*ch); }
+  return out;
+}
+function rainFx(src, p){
+  const w = src.width, h = src.height, cw = Math.max(4, Math.min(w,h)/p.cells), ch = cw*1.7, cols = Math.ceil(w/cw), rows = Math.ceil(h/ch), t = p.seed/10;
+  const cell = p.col === 1 ? cellStats(src, cw, ch, cols, rows) : null;
+  const out = dimmed(src, p.pic/100), c = ctx2(out);
+  c.globalCompositeOperation = 'lighter'; c.font = monoFont(ch*.82); c.textAlign = 'center'; c.textBaseline = 'middle';
+  for (let j = 0; j < cols; j++){ const r = hash(j, 1); if (r % 100 >= p.dens) continue;          // some columns rest
+    const speed = 5 + (r % 1009)/1009*15, trail = (5 + (r % 613)/613*13)*p.trail/100, period = rows + trail + 4 + (r % 211)/211*rows*.8;
+    const head = ((r % 4099)/4099*period + speed*t) % period;
+    for (let i = 0; i < rows; i++){ const d = head - i; if (d < 0 || d >= trail) continue;
+      const rr = hash(i*cols + j, 3), rate = 6 + (rr % 997)/997*8, tick = Math.floor(t*rate + (rr % 389)/389), dg = ((rr + Math.imul(tick, 2654435761)) >>> 7) % 10;
+      const isHead = d < 1, a = isHead ? 1 : Math.pow(1 - d/trail, 1.4)*.83;
+      c.fillStyle = isHead ? rgba(BGC, 1) : rgba(cell ? cell(i*cols + j).col.map(x => Math.min(255, x*1.5 + 30)) : FGC, a);
+      c.fillText(DIGITS[dg], (j+.5)*cw, (i+.5)*ch); } }
+  return out;
+}
+function cloudFx(src, p){
+  const w = src.width, h = src.height, cols = p.dens, sx = w/cols, rows = Math.max(1, Math.round(h/sx)), sy = h/rows, cell = cellStats(src, sx, sy, cols, rows);
+  const dots = [], depth = p.depth/100, ang = p.turn*Math.PI/180, ca = Math.cos(ang), sa = Math.sin(ang), F = w*1.8;
+  for (let k = 0; k < cols*rows; k++){ const q = cell(k), L = .4*q.L + .6*q.max; if (L <= p.thr/100) continue;   // half mean, half peak: thin bright lines survive
+    const X = (k%cols + .5)*sx - w/2, Y = ((k/cols|0) + .5)*sy - h/2, Z = (L - .5)*w*.6*depth, rx = X*ca + Z*sa, rz = -X*sa + Z*ca, s = F/(F + rz);
+    dots.push([rz, w/2 + rx*s, h/2 + Y*s, L*s, L, q.col]); }
+  dots.sort((a, b) => b[0] - a[0]);                                  // far first, near on top
+  const out = mk(w,h), c = ctx2(out); if (p.bgm === 0){ c.fillStyle = 'rgb(8,8,8)'; c.fillRect(0,0,w,h); }
+  const rmax = sx*.42*p.size/100;
+  for (const [, x, y, size, L, col] of dots){ const r = Math.max(.6, rmax*(size < .45 ? .35 : size < .75 ? .65 : 1));
+    c.fillStyle = p.col === 1 ? rgba(col.map(v => Math.min(255, v*1.3)), 1) : rgba(L > .62 ? BGC : FGC, 1);
+    c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill(); }
+  return out;
+}
+/* ---------- curves ---------- */
+const CURVES = {0:[[0,0],[64,46],[192,212],[255,255]], 1:[[0,0],[255,255]], 2:[[0,0],[255,255]], 3:[[0,0],[255,255]]};
+let lastHist = null, curveDrag = null;
+// monotone cubic (Fritsch-Carlson): no overshoot between points
+function curveLut(pts){
+  const n = pts.length, xs = pts.map(q => q[0]), ys = pts.map(q => q[1]), dx = [], sl = [], m = [], lut = new Float32Array(256);
+  for (let i = 0; i < n-1; i++){ dx[i] = Math.max(1e-3, xs[i+1]-xs[i]); sl[i] = (ys[i+1]-ys[i])/dx[i]; }
+  m[0] = sl[0]; m[n-1] = sl[n-2]; for (let i = 1; i < n-1; i++) m[i] = sl[i-1]*sl[i] <= 0 ? 0 : (sl[i-1]+sl[i])/2;
+  for (let i = 0; i < n-1; i++){ if (!sl[i]){ m[i] = m[i+1] = 0; continue; } const a = m[i]/sl[i], b = m[i+1]/sl[i], hh = a*a + b*b; if (hh > 9){ const t = 3/Math.sqrt(hh); m[i] = t*a*sl[i]; m[i+1] = t*b*sl[i]; } }
+  for (let x = 0, i = 0; x < 256; x++){
+    if (x <= xs[0]){ lut[x] = ys[0]; continue; } if (x >= xs[n-1]){ lut[x] = ys[n-1]; continue; }
+    while (x > xs[i+1]) i++; const hh = dx[i], t = (x - xs[i])/hh, t2 = t*t, t3 = t2*t;
+    lut[x] = (2*t3 - 3*t2 + 1)*ys[i] + (t3 - 2*t2 + t)*hh*m[i] + (-2*t3 + 3*t2)*ys[i+1] + (t3 - t2)*hh*m[i+1]; }
+  return lut;
+}
+function drawCurve(){
+  const cv = $('#curve'); if (!cv) return; const c = cv.getContext('2d'), ch = fxP.curves.ch, cs = getComputedStyle(document.documentElement), V = k => cs.getPropertyValue(k).trim();
+  c.clearRect(0,0,256,256); c.strokeStyle = V('--line2'); c.lineWidth = 1;
+  for (let i = 64; i < 256; i += 64){ c.beginPath(); c.moveTo(i+.5,0); c.lineTo(i+.5,256); c.moveTo(0,i+.5); c.lineTo(256,i+.5); c.stroke(); }
+  if (lastHist){ const mx = Math.max(...lastHist); c.fillStyle = V('--line2'); for (let v = 0; v < 256; v++){ const bh = Math.sqrt(lastHist[v]/mx)*120; c.fillRect(v, 256-bh, 1, bh); } }
+  c.setLineDash([3,3]); c.beginPath(); c.moveTo(0,256); c.lineTo(256,0); c.stroke(); c.setLineDash([]);
+  const lut = curveLut(CURVES[ch]); c.strokeStyle = ['', '#ff5a5a', '#5ad15a', '#5a8cff'][ch] || V('--accent'); c.lineWidth = 2; c.beginPath();
+  for (let x = 0; x < 256; x++) c[x ? 'lineTo' : 'moveTo'](x, 255 - lut[x]); c.stroke();
+  c.fillStyle = V('--text'); CURVES[ch].forEach(([x,y]) => c.fillRect(x-4, 251-y, 8, 8));
+}
+const curvePt = e => { const r = $('#curve').getBoundingClientRect(); return [(e.clientX - r.left)/r.width*255, 255 - (e.clientY - r.top)/r.height*255]; };
+$('#props').addEventListener('mousedown', e => {
+  if (!e.target.closest('#curve')) return; e.preventDefault();
+  const pts = CURVES[fxP.curves.ch], [x, y] = curvePt(e); let i = pts.findIndex(q => Math.hypot(q[0]-x, q[1]-y) < 12);
+  if (i < 0){ const lut = curveLut(pts); i = pts.findIndex(q => q[0] > x); if (i < 0) i = pts.length; pts.splice(i, 0, [x, lut[Math.round(Math.min(255, Math.max(0, x)))]]); }
+  curveDrag = i; drawCurve(); fxSchedule();
+});
+window.addEventListener('mousemove', e => {
+  if (curveDrag === null || !$('#curve')) return; const pts = CURVES[fxP.curves.ch], [x, y] = curvePt(e), i = curveDrag;
+  const off = y < -25 || y > 280 || x < -25 || x > 280;
+  if (off && i > 0 && i < pts.length-1){ pts.splice(i, 1); curveDrag = null; }       // dragged off the graph: removed
+  else { const lo = i > 0 ? pts[i-1][0] + 1 : 0, hi = i < pts.length-1 ? pts[i+1][0] - 1 : 255; pts[i] = [Math.min(hi, Math.max(lo, x)), Math.min(255, Math.max(0, y))]; }
+  drawCurve(); fxSchedule();
+});
+window.addEventListener('mouseup', () => curveDrag = null);
+
+/* ---------- screens ---------- */
+const SCREENS = [['newdoc','New document'],['workspace','Workspace'],['warp','Warp'],['cas','Content-aware'],['fx','Filters'],['grad','Gradient editor'],['imgsize','Image size'],['export','Export']];
+$('#mnav').innerHTML = '<em>MOCKUP</em>' + SCREENS.map(s=>`<span data-goto="${s[0]}">${s[1]}</span>`).join('');
+function go(s){
+  screen = s;
+  $$('.scrim').forEach(x => x.classList.toggle('on', x.id===s));
+  $$('#mnav span').forEach(x => x.classList.toggle('on', x.dataset.goto===s));
+  const warp = s==='warp';
+  $('#warp').style.display = warp ? '' : 'none';
+  $('#selection').style.display = warp ? 'none' : '';
+  const cas = s==='cas';
+  if (warp){ activeLayer = 'text'; tool = 'move'; }
+  // content-aware: canvas goes 150% wide; flat areas stretch, protected sun + text keep their shape and slide to their new spots
+  DW = cas ? 3600 : 2400;
+  $('#art').setAttribute('viewBox', `0 0 ${DW} 3000`);
+  const T = {stretch:'scale(1.5 1)', sun:'translate(825 0)', text:'translate(600 0)'};
+  $$('#art [data-cas]').forEach(u => cas ? u.setAttribute('transform', T[u.dataset.cas]) : u.removeAttribute('transform'));
+  $('#cas').style.display = cas ? '' : 'none';
+  $('#guides').style.display = cas ? 'none' : '';
+  const fxm = s==='fx';
+  document.body.classList.toggle('fxmode', fxm);
+  if (cas || fxm) $('#selection').style.display = 'none';
+  if (fxm && (!fxVisited || !ORDER.some(o => o[0]===activeLayer))){ activeLayer = 'text'; fxVisited = true; }
+  $('#tabLayer').textContent = cas ? 'all layers' : $('#tabLayer').textContent;
+  layout();
+  renderLayers(); setTool(warp || cas || fxm ? 'move' : tool);
+  if (fxm) fxSchedule();
+}
+
+/* ---------- new document ---------- */
+const PRESETS = {
+  Recent:[['poster','8 × 10 in','300 ppi',2400,3000]],
+  Photo:[['4 × 6 in','4 × 6 in','300 ppi',1200,1800],['5 × 7 in','5 × 7 in','300 ppi',1500,2100],['8 × 10 in','8 × 10 in','300 ppi',2400,3000],['Square','12 × 12 in','300 ppi',3600,3600]],
+  Print:[['A4','210 × 297 mm','300 ppi',2480,3508],['A3','297 × 420 mm','300 ppi',3508,4961],['Letter','8.5 × 11 in','300 ppi',2550,3300],['8 × 10 in','8 × 10 in','300 ppi',2400,3000],['Poster 18 × 24','18 × 24 in','150 ppi',2700,3600],['Flyer A5','148 × 210 mm','300 ppi',1748,2480]],
+  Screen:[['HD','1920 × 1080','72 ppi',1920,1080],['4K UHD','3840 × 2160','72 ppi',3840,2160],['Web','1440 × 900','72 ppi',1440,900],['Retina laptop','2880 × 1800','144 ppi',2880,1800]],
+  Social:[['Square post','1080 × 1080','72 ppi',1080,1080],['Portrait post','1080 × 1350','72 ppi',1080,1350],['Story / Reel','1080 × 1920','72 ppi',1080,1920],['Thumbnail','1280 × 720','72 ppi',1280,720]],
+};
+let cat = 'Print';
+function renderPresets(){
+  $('#cats').innerHTML = Object.keys(PRESETS).map(c=>`<span class="${c===cat?'on':''}" data-cat="${c}">${c}</span>`).join('');
+  $('#presets').innerHTML = PRESETS[cat].map((p,i) => { const s = 46/Math.max(p[3],p[4]);
+    return `<div class="pc ${p[0]==='8 × 10 in'||(cat==='Recent')?'on':''}" data-p="${i}"><div class="shape"><i style="width:${p[3]*s}px;height:${p[4]*s}px"></i></div><b>${p[0]}</b><small>${p[1]} · ${p[2]}</small></div>`; }).join('');
+}
+$('#cats').addEventListener('click', e => { const c = e.target.closest('[data-cat]'); if (c){ cat = c.dataset.cat; renderPresets(); }});
+$('#presets').addEventListener('click', e => {
+  const c = e.target.closest('[data-p]'); if (!c) return;
+  $$('.pc').forEach(x=>x.classList.toggle('on', x===c));
+  const p = PRESETS[cat][+c.dataset.p], ppi = parseInt(p[2]);
+  $('#ndU').value = 'Pixels'; $('#ndW').value = p[3]; $('#ndH').value = p[4]; $('#ndR').value = ppi; ndCalc();
+});
+function ndCalc(){
+  const u = $('#ndU').value, ppi = +$('#ndR').value || 72, f = {Pixels:1, Inches:ppi, Centimeters:ppi/2.54, Millimeters:ppi/25.4}[u];
+  const w = Math.round(+$('#ndW').value*f), h = Math.round(+$('#ndH').value*f), mb = w*h*4/1048576;
+  const inch = (w/ppi).toFixed(2).replace(/\.?0+$/,'') + ' × ' + (h/ppi).toFixed(2).replace(/\.?0+$/,'') + ' in';
+  $('#ndOut').innerHTML = `<b>${w} × ${h} px</b><br>${inch} @ ${ppi} ppi<br>${mb.toFixed(1)} MB per layer · ${$('#ndBg').value} background` + (Math.max(w,h) > 12000 ? '<br><span style="color:var(--danger)">Above the 12 000 px limit</span>' : '');
+  $('#oP').classList.toggle('on', h>=w); $('#oL').classList.toggle('on', w>h);
+}
+['#ndW','#ndH','#ndU','#ndR','#ndBg'].forEach(s => $(s).addEventListener('input', ndCalc));
+$('#oP').onclick = $('#oL').onclick = e => { const w = $('#ndW').value, h = $('#ndH').value, wantL = e.currentTarget.id==='oL';
+  if ((+w > +h) !== wantL){ $('#ndW').value = h; $('#ndH').value = w; } ndCalc(); };
+
+/* ---------- gradient presets ---------- */
+const CK = 'var(--checker)';
+$('#gpre').innerHTML = [
+  'linear-gradient(90deg,#ff3d8b,#f3efe6)',
+  `linear-gradient(90deg,#ff3d8b,rgba(255,61,139,0)),${CK}`,
+  'linear-gradient(90deg,#000,#fff)',
+  `linear-gradient(90deg,rgba(255,179,71,0),#ff3d8b),${CK}`,
+  'linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)',
+  'linear-gradient(90deg,#0b0d1f,#5a3cff,#ff4fd8)',
+  'linear-gradient(90deg,#8fd3ff,#f3efe6)',
+  `linear-gradient(90deg,rgba(0,0,0,0),#000),${CK}`,
+].map((g,i)=>`<i class="${i===3?'on':''}" style="background:${g}"></i>`).join('');
+
+/* ---------- image size ---------- */
+const RS = [['Automatic','picks per direction'],['Nearest neighbor','hard edges, pixel art'],['Bilinear','fast, slightly soft'],['Bicubic smoother','best for enlarging'],['Bicubic sharper','best for reducing'],['Preserve details','enlarge with sharpening']];
+$('#rs').innerHTML = RS.map((r,i)=>`<div class="rsc ${i===0?'on':''}"><b>${r[0]}</b><small>${r[1]}</small></div>`).join('');
+$('#rs').addEventListener('click', e => { const c = e.target.closest('.rsc'); if (c) $$('.rsc').forEach(x=>x.classList.toggle('on', x===c)); });
+$('#chain').onclick = () => { const off = $('#chain').classList.toggle('off'); $('#chainNote').textContent = off ? 'Unlinked: width and height stretch independently.' : 'Proportions linked. Unlink the chain to stretch.'; };
+
+/* ---------- export ---------- */
+const FMT = {
+  PNG: [`<div class="row">${chk('Transparency',true)}</div><div class="row">${chk('Smaller file (8-bit palette)',false)}</div>`,'≈ 6.4 MB'],
+  JPG: [`<div class="row"><span class="lbl" style="width:56px">Quality</span><div class="slider"></div><span class="fld">82</span></div><div class="row"><span class="lbl" style="width:56px">Matte</span><span class="sel" style="flex:1">White</span></div><div class="row">${chk('Progressive',false)}</div>`,'≈ 1.1 MB'],
+  WebP:[`<div class="row"><span class="lbl" style="width:56px">Quality</span><div class="slider"></div><span class="fld">82</span></div><div class="row">${chk('Lossless',false)} ${chk('Transparency',true)}</div>`,'≈ 0.6 MB'],
+  PSD: [`<div class="row">${chk('Keep layers',true)}</div><div class="row">${chk('Keep text editable',true)}</div><div class="row lbl">Blend modes, opacity, gradient overlay and fill layers carry over.</div>`,'≈ 31 MB'],
+  PDF: [`<div class="row"><span class="lbl" style="width:56px">Image</span><span class="sel" style="flex:1">JPEG, quality 90</span></div><div class="row">${chk('Crop marks',false)} ${chk('3 mm bleed',false)}</div><div class="row lbl">One page at the document's physical size (8 × 10 in).</div>`,'≈ 2.0 MB'],
+};
+function renderFmt(f){ $('#fmtOpts').innerHTML = FMT[f][0]; $('#exSize').textContent = FMT[f][1];
+  $('#exPrev .meta').firstChild.textContent = 'poster.' + f.toLowerCase().replace('jpg','jpg') + ' · '; }
+$('#fmt').addEventListener('click', e => { const s = e.target.closest('span'); if (!s) return; $$('#fmt span').forEach(x=>x.classList.toggle('on', x===s)); renderFmt(s.textContent); });
+$$('.ex-side .seg').forEach(sg => sg.addEventListener('click', e => { const s = e.target.closest('span'); if (s && sg.id!=='fmt') sg.querySelectorAll('span').forEach(x=>x.classList.toggle('on', x===s)); }));
+$$('.ex-side').forEach(x => x.addEventListener('click', e => { const c = e.target.closest('.chk'); if (c) c.classList.toggle('on'); }));
+renderFmt('PNG');
+
+/* ---------- keys ---------- */
+const KEYMAP = {v:'move',m:'ellipse',l:'lasso',w:'selbrush',c:'crop',i:'dropper',b:'brush',e:'eraser',g:'gradient',t:'text',h:'hand',z:'zoom'};
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,select')) return;
+  if (e.key==='Escape') return go('workspace');
+  if ((e.metaKey||e.ctrlKey) && e.key==='n'){ e.preventDefault(); return go('newdoc'); }
+  if ((e.metaKey||e.ctrlKey) && e.key==='t'){ e.preventDefault(); return go('warp'); }
+  if (!e.metaKey && !e.ctrlKey && KEYMAP[e.key]){ if (screen!=='workspace') go('workspace'); setTool(KEYMAP[e.key]); }
+});
+
+const SKINS = {mono:'#c8a0b4', violet:'#a082c8', paper:'#cc2828', terminal:'#22cc44', ember:'#e09010', ice:'#64b4f0', wyrm:'#d6282a'};
+let skin = 'mono';
+function setSkin(k){ skin = k; document.documentElement.dataset.skin = k;
+  $('#skins').innerHTML = Object.entries(SKINS).map(([n,c])=>`<i title="${n}" data-skin="${n}" class="${n===k?'on':''}" style="background:${c}"></i>`).join('');
+  drawRulers(); }
+$('#skins').addEventListener('click', e => { const i = e.target.closest('[data-skin]'); if (i) setSkin(i.dataset.skin); });
+renderTools(); renderPresets(); ndCalc(); renderLayers(); setSkin('mono');
+requestAnimationFrame(() => { layout(); go('newdoc'); });
+document.fonts.ready.then(layout);
+</script>
+</body>
+</html>

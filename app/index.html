@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stlv</title>
+<link rel="stylesheet" href="css/stlv.css">
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="brand"><b>s</b>stlv</div>
+    <div id="menus"></div>
+    <div class="topright"><span class="lbl">Skin</span><span class="skins" id="skins"></span></div>
+  </div>
+  <div id="options"></div>
+  <div id="main">
+    <div id="tools"></div>
+    <div id="center">
+      <div id="tabs"></div>
+      <div id="stage">
+        <div id="corner"></div>
+        <canvas class="ruler" id="rulerT"></canvas>
+        <canvas class="ruler" id="rulerL"></canvas>
+        <div id="viewport">
+          <canvas id="glc"></canvas>
+          <canvas id="ovc"></canvas>
+          <div id="empty" class="hide"><div><div class="big">stlv</div><div>Create or open a document to start.</div><div class="btns" id="emptyBtns"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="panels"></div>
+  </div>
+  <div id="status"></div>
+</div>
+<div id="toast"></div>
+<div id="busy"><div><div id="busyLabel">Working…</div><div class="bar"><i id="busyBar"></i></div></div></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
